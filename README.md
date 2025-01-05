@@ -31,6 +31,11 @@
 
 ### MineRL 0.4.4 (minerl044)
 ```bash
+conda install conda-forge::openjdk=8 
+pip install setuptools==65.5.0 pip==21
+pip install wheel==0.38.0
+pip install minerl==0.4.4
+
 conda activate exp_minerl044
 python experiments/minerl044.py --image_width 64x64 --load simulation
 ```
