@@ -196,3 +196,6 @@ pyrightconfig.json
 wandb
 videos
 logs
+runs
+models
+ckpts/

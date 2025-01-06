@@ -4,7 +4,14 @@ import time
 from craftground.screen_encoding_modes import ScreenEncodingMode
 from craftground.initial_environment_config import DaylightMode
 import wandb
-from experiments import get_device
+from experiments.optim_dummy_vec_env import (
+    DummyTensorVecEnv,
+    patched_obs_as_tensor,
+    TensorRolloutBuffer,
+)
+from experiments.transpose_vision_wrapper import TransposeVisionWrapper
+from experiments.tree_wrapper import TreeWrapper
+from get_device import get_device
 from experiments.cpu_wrapper import CPUVisionWrapper
 from experiments.experiment_setting import MAX_STEPS
 import gymnasium as gym
@@ -18,6 +25,9 @@ from stable_baselines3 import PPO
 from wandb.integration.sb3 import WandbCallback
 
 from check_vglrun import check_vglrun
+
+
+from stable_baselines3.common import on_policy_algorithm
 
 
 def make_craftground_env(
@@ -54,6 +64,7 @@ def ppo_check(
     port: int,
     device_id: int = 3,
     render: bool = False,
+    use_optimized_sb3: bool = False,
 ):
     env = make_craftground_env(
         port=port,
@@ -62,22 +73,24 @@ def ppo_check(
         screen_encoding_mode=screen_encoding_mode,
     )
     env = VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
+    env = TreeWrapper(env)
 
-    if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY and render:
-        env = CPUVisionWrapper(env)
-
-    # To record videos, we need to wrap the environment with VecVideoRecorder
-    env = DummyVecEnv([lambda: env])
-
-    if render:
-        # Record video every 2000 steps and save the video
+    # Record video every 2000 steps and save the video
+    if render or not use_optimized_sb3:
+        if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY:
+            env = CPUVisionWrapper(env)
+        env = DummyVecEnv([lambda: env])
         env = VecVideoRecorder(
             env,
             f"videos/{run.id}",
             record_video_trigger=lambda x: x % 2000 == 0,
             video_length=2000,
         )
-
+    else:
+        env = TransposeVisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
+        env = DummyTensorVecEnv([lambda: env])
+        on_policy_algorithm.obs_as_tensor = patched_obs_as_tensor
+        on_policy_algorithm.RolloutBuffer = TensorRolloutBuffer
     model = PPO(
         "CnnPolicy",
         env,

@@ -106,22 +106,22 @@ pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To e
 python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
 ```
 
-# Experiment Results (Simulation Speed)
+# Experiment Results (Simulation Speed, CUDA version)
 Both used vglrun to run the experiments on headless server.
 
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
 | Configuration            | MineRL 1.0.0 | CraftGround RAW | CraftGround ZeroCopy |
 | ------------------------ | ------------ | --------------- | -------------------- |
-| 64x64 Simul              | 57           | 192             | 134                  |
-| 640x360 Simul            | 56           | 140             | 135                  |
+| 64x64 Simul              | 57           | 192             | 146                  |
+| 640x360 Simul            | 56           | 140             | 151                  |
 | 64x64 Render             | ?            | 175             | 155                  |
-| 640x360 Render           | ?            | 115             | ?                    |
+| 640x360 Render           | ?            | 115             | 120                  |
 | 64x64 PPO                | ?            | ?               | ?                    |
 | 640x360 PPO              | ?            | ?               | ?                    |
 | 64x64 PPO Render         | ?            | ?               | ?                    |
 | 640x360 PPO Render       | ?            | ?               | ?                    |
-| 64x64  Render Optim      | ?            | ?               | ?                    |
-| 640x360  Render Optim    | ?            | ?               | ?                    |
+| 64x64 Render Optim       | ?            | ?               | ?                    |
+| 640x360 Render Optim     | ?            | ?               | ?                    |
 | 64x64 PPO Render Optim   | ?            | ?               | ?                    |
 | 640x360 PPO Render Optim | ?            | ?               | ?                    |
 
