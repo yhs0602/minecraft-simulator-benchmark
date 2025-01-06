@@ -112,10 +112,10 @@ Both used vglrun to run the experiments on headless server.
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
 | Configuration            | MineRL 1.0.0 | CraftGround RAW | CraftGround ZeroCopy |
 | ------------------------ | ------------ | --------------- | -------------------- |
-| 64x64 Simul              | 57           | 161             | 144                  |
-| 640x360 Simul            | 56           | 131             | 135                  |
-| 64x64 Render             | ?            | 175             | 135                  |
-| 640x360 Render           | ?            | ?               | ?                    |
+| 64x64 Simul              | 57           | 192             | 134                  |
+| 640x360 Simul            | 56           | 140             | 135                  |
+| 64x64 Render             | ?            | 175             | 155                  |
+| 640x360 Render           | ?            | 115             | ?                    |
 | 64x64 PPO                | ?            | ?               | ?                    |
 | 640x360 PPO              | ?            | ?               | ?                    |
 | 64x64 PPO Render         | ?            | ?               | ?                    |
