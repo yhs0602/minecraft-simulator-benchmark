@@ -10,7 +10,7 @@ from craftground import InitialEnvironmentConfig, ActionSpaceVersion
 from craftground.wrappers.vision import VisionWrapper
 from craftground.minecraft import no_op_v2
 
-from experiments import check_vglrun
+from check_vglrun import check_vglrun
 
 MAX_STEPS = 100_000
 
@@ -54,11 +54,11 @@ def simulation_check(
         screen_encoding_mode=screen_encoding_mode,
     )
     VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
-    obs = env.reset()  # info
+    obs, info = env.reset()  # info
     start_time = time.time_ns()
     for i in range(MAX_STEPS):
         action = no_op_v2()
-        obs, reward, terminated, info = env.step([action])  # truncated
+        obs, reward, terminated, truncated, info = env.step(action)  # truncated
         time_elapsed = max((time.time_ns() - start_time) / 1e9, sys.float_info.epsilon)
         fps = int(i / time_elapsed)
         if i % 512 == 0:
