@@ -121,3 +121,5 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 640x360 Simul Render Optim | ?            | ?               | ?                    |
 | 64x64 PPO Render Optim     | ?            | ?               | ?                    |
 | 640x360 PPO Render Optim   | ?            | ?               | ?                    |
+
+Currently CraftGround 640x360 result is actually 640x320. We will re-run the experiment with 640x360 and update the results.
