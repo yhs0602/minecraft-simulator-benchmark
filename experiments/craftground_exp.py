@@ -73,6 +73,7 @@ def simulation_check(
         if i % 4000 == 0:
             print(f"Step: {i}")
 
+    env.terminate()
 
 def do_experiment(mode, image_width, load, port):
     screen_encoding_mode = {

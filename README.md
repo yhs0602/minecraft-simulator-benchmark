@@ -89,10 +89,11 @@ python experiments/minerl100.py --image_width 64x64 --load simulation
 ```
 
 ### Craftground (craftground_raw | craftground_zerocopy: exp_craftground)
+Latest cmake is required for Craftground to ensure it finds the cuda libraries correctly.
 ```bash
 conda create -n exp_craftground python=3.11
 conda activate exp_craftground
-conda install conda-forge::openjdk=21
+conda install conda-forge::openjdk=21 cmake
 pip install craftground
 pip install wandb tensorboard moviepy
 python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
