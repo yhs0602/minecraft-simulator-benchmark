@@ -1,3 +1,6 @@
+# Malmö vs Craftground Performance Comparison experiment
+This experiment compares the performance of Malmö and Craftground in terms of FPS and memory usage. Here we use MineRL which is based on Malmö, because MineRL is most widely used in the research community.
+
 # Performance Comparison
 ## Configurations
 - Targets: MineRL 0.4.4 vs MineRL 1.0.0 vs Craftground RAW vs Craftground ZeroCopy
@@ -5,7 +8,7 @@
 - Image Width:
     - 64 x 64
     - 114 x 64
-    - 640 x 320
+    - 640 x 360
 - Settings
     - (Simulation)
     - (Simulation + Render)
@@ -21,7 +24,7 @@
 
 # Run options
 - environment: minerl044, minerl100, craftground_raw, craftground_zerocopy
-- image_width: 64x64, 114x64, 640x320
+- image_width: 64x64, 114x64, 640x360
 - load: simulation, render, ppo, render_ppo, optimized_render, optimized_ppo, optimized_render_ppo
 
 # Environment Setup
@@ -30,6 +33,7 @@
 - Apple M1 Pro, single process at once,  single process at once, normal load (not strict setting)
 
 ### MineRL 0.4.4 (exp_minerl044)
+This may help solving issues such as https://github.com/minerllabs/minerl/issues/788.
 ```bash
 conda create -n exp_minerl044 python=3.11
 conda activate exp_minerl044
@@ -74,8 +78,8 @@ pip install -r requirements.txt
 # Add repository maven to the build.gradle
 #         maven { url 'file:file:/absolute-path/to/that/repo's/parent' }
 pip install .
-
-python experiments/minerl044.py --image_width 64x64 --load simulation
+pip install wandb tensorboard moviepy
+vglrun python experiments/minerl044.py --image_width 64x64 --load simulation
 ```
 
 ### MineRL 1.0.0 (exp_minerl100)
@@ -85,7 +89,7 @@ conda activate exp_minerl100
 conda install conda-forge::openjdk=8
 pip install git+https://github.com/minerllabs/minerl
 pip install wandb tensorboard moviepy
-python experiments/minerl100.py --image_width 64x64 --load simulation
+vglrun python experiments/minerl100_exp.py --image_width 64x64 --load simulation
 ```
 
 ### Craftground (craftground_raw | craftground_zerocopy: exp_craftground)
@@ -98,3 +102,22 @@ pip install craftground
 pip install wandb tensorboard moviepy
 python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
 ```
+
+# Experiment Results (Simulation Speed)
+Both used vglrun to run the experiments on headless server.
+
+For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
+| Configuration              | MineRL 1.0.0 | CraftGround RAW | CraftGround ZeroCopy |
+| -------------------------- | ------------ | --------------- | -------------------- |
+| 64x64 Simul                | 57           | 161             | 144                  |
+| 640x360 Simul              | 56           | 131             | 135                  |
+| 64x64 PPO                  | ?            | ?               | ?                    |
+| 640x360 PPO                | ?            | ?               | ?                    |
+| 64x64 Simul Render         | ?            | ?               | ?                    |
+| 640x360 Simul Render       | ?            | ?               | ?                    |
+| 64x64 PPO Render           | ?            | ?               | ?                    |
+| 640x360 PPO Render         | ?            | ?               | ?                    |
+| 64x64 Simul Render Optim   | ?            | ?               | ?                    |
+| 640x360 Simul Render Optim | ?            | ?               | ?                    |
+| 64x64 PPO Render Optim     | ?            | ?               | ?                    |
+| 640x360 PPO Render Optim   | ?            | ?               | ?                    |

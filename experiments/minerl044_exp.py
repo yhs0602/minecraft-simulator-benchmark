@@ -8,7 +8,7 @@ def main():
     # Image width options
     parser.add_argument(
         "--image_width",
-        choices=["64x64", "114x64", "640x320"],
+        choices=["64x64", "114x64", "640x360"],
         required=True,
         help="Set the resolution of the image.",
     )

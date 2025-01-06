@@ -4,6 +4,7 @@ import time
 from craftground.screen_encoding_modes import ScreenEncodingMode
 from craftground.initial_environment_config import DaylightMode
 import wandb
+from experiments.experiment_setting import MAX_STEPS
 import gymnasium as gym
 import craftground
 from craftground import InitialEnvironmentConfig, ActionSpaceVersion
@@ -11,8 +12,6 @@ from craftground.wrappers.vision import VisionWrapper
 from craftground.minecraft import no_op_v2
 
 from check_vglrun import check_vglrun
-
-MAX_STEPS = 100_000
 
 
 def make_craftground_env(
@@ -53,7 +52,6 @@ def simulation_check(
         height=vision_height,
         screen_encoding_mode=screen_encoding_mode,
     )
-    VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
     obs, info = env.reset()  # info
     start_time = time.time_ns()
     for i in range(MAX_STEPS):
@@ -75,6 +73,7 @@ def simulation_check(
 
     env.terminate()
 
+
 def do_experiment(mode, image_width, load, port):
     screen_encoding_mode = {
         "raw": ScreenEncodingMode.RAW,
@@ -83,7 +82,7 @@ def do_experiment(mode, image_width, load, port):
     vision_width, vision_height = {
         "64x64": (64, 64),
         "114x64": (114, 64),
-        "640x320": (640, 320),
+        "640x360": (640, 360),
     }[image_width]
 
     group_name = f"craftground-{mode}--{vision_width}-{vision_height}-{load}"
@@ -131,7 +130,7 @@ def main():
     # Image width options
     parser.add_argument(
         "--image_width",
-        choices=["64x64", "114x64", "640x320"],
+        choices=["64x64", "114x64", "640x360"],
         required=True,
         help="Set the resolution of the image.",
     )
