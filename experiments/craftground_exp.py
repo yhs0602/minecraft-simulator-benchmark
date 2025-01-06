@@ -4,12 +4,18 @@ import time
 from craftground.screen_encoding_modes import ScreenEncodingMode
 from craftground.initial_environment_config import DaylightMode
 import wandb
+from experiments import get_device
+from experiments.cpu_wrapper import CPUVisionWrapper
 from experiments.experiment_setting import MAX_STEPS
 import gymnasium as gym
 import craftground
 from craftground import InitialEnvironmentConfig, ActionSpaceVersion
 from craftground.wrappers.vision import VisionWrapper
 from craftground.minecraft import no_op_v2
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
+from stable_baselines3 import PPO
+from wandb.integration.sb3 import WandbCallback
 
 from check_vglrun import check_vglrun
 
@@ -38,6 +44,123 @@ def make_craftground_env(
         verbose_gradle=verbose_gradle,
         verbose_jvm=verbose_jvm,
     )
+
+
+def ppo_check(
+    run,
+    screen_encoding_mode: ScreenEncodingMode,
+    vision_width: int,
+    vision_height: int,
+    port: int,
+    device_id: int = 3,
+    render: bool = False,
+):
+    env = make_craftground_env(
+        port=port,
+        width=vision_width,
+        height=vision_height,
+        screen_encoding_mode=screen_encoding_mode,
+    )
+    env = VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
+
+    if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY and render:
+        env = CPUVisionWrapper(env)
+
+    # To record videos, we need to wrap the environment with VecVideoRecorder
+    env = DummyVecEnv([lambda: env])
+
+    if render:
+        # Record video every 2000 steps and save the video
+        env = VecVideoRecorder(
+            env,
+            f"videos/{run.id}",
+            record_video_trigger=lambda x: x % 2000 == 0,
+            video_length=2000,
+        )
+
+    model = PPO(
+        "CnnPolicy",
+        env,
+        verbose=1,
+        device=get_device(device_id),
+        tensorboard_log=f"runs/{run.id}",
+        gae_lambda=0.99,
+        ent_coef=0.005,
+        n_steps=512,
+    )
+
+    try:
+        env.reset()
+        model.learn(
+            total_timesteps=MAX_STEPS,
+            callback=[
+                # CustomWandbCallback(),
+                WandbCallback(
+                    gradient_save_freq=500,
+                    model_save_path=f"models/{run.id}",
+                    verbose=2,
+                ),
+            ],
+        )
+        model.save(f"ckpts/{run.group}-{run.name}.ckpt")
+    finally:
+        env.close()
+        run.finish()
+
+
+# Simulation noop + render using moviepy, not optimized
+def render_check(
+    run,
+    screen_encoding_mode: ScreenEncodingMode,
+    vision_width: int,
+    vision_height: int,
+    port: int,
+):
+    env = make_craftground_env(
+        port=port,
+        width=vision_width,
+        height=vision_height,
+        screen_encoding_mode=screen_encoding_mode,
+    )
+    env = VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
+    if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY:
+        env = CPUVisionWrapper(env)
+
+    # To record videos, we need to wrap the environment with VecVideoRecorder
+    env = DummyVecEnv([lambda: env])
+    # Record video every 2000 steps and save the video
+    env = VecVideoRecorder(
+        env,
+        f"videos/{run.id}",
+        record_video_trigger=lambda x: x % 2000 == 0,
+        video_length=2000,
+    )
+    try:
+        obs = env.reset()  # DummyVecEnv reset returns only obs
+        start_time = time.time_ns()
+        for i in range(MAX_STEPS):
+            action = [no_op_v2()]
+            obs, reward, terminated, info = env.step(
+                action
+            )  # truncated is not provided in VecEnv
+            time_elapsed = max(
+                (time.time_ns() - start_time) / 1e9, sys.float_info.epsilon
+            )
+            fps = int(i / time_elapsed)
+            if i % 512 == 0:
+                wandb.log(
+                    {
+                        "time/iterations": i,
+                        "time/fps": fps,
+                        "time/time_elapsed": int(time_elapsed),
+                        "time/total_timesteps": i,
+                    }
+                )
+            if i % 4000 == 0:
+                print(f"Step: {i}")
+    finally:
+        env.close()
+        run.finish()
 
 
 def simulation_check(
@@ -99,17 +222,21 @@ def do_experiment(mode, image_width, load, port):
     if load == "simulation":
         simulation_check(screen_encoding_mode, vision_width, vision_height, port)
     elif load == "render":
-        pass
+        render_check(run, screen_encoding_mode, vision_width, vision_height, port)
     elif load == "ppo":
-        pass
+        ppo_check(
+            run, screen_encoding_mode, vision_width, vision_height, port, render=False
+        )
     elif load == "render_ppo":
-        pass
+        ppo_check(
+            run, screen_encoding_mode, vision_width, vision_height, port, render=True
+        )
     elif load == "optimized_render":
-        pass
+        raise NotImplementedError("Not implemented yet")
     elif load == "optimized_ppo":
-        pass
+        raise NotImplementedError("Not implemented yet")
     elif load == "optimized_render_ppo":
-        pass
+        raise NotImplementedError("Not implemented yet")
     else:
         raise ValueError(f"Unknown load configuration: {load}")
 

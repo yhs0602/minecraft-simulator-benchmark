@@ -78,7 +78,8 @@ pip install -r requirements.txt
 # Add repository maven to the build.gradle
 #         maven { url 'file:file:/absolute-path/to/that/repo's/parent' }
 pip install .
-pip install wandb tensorboard moviepy
+pip install wandb tensorboard moviepy stable-baselines3
+pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
 vglrun python experiments/minerl044.py --image_width 64x64 --load simulation
 ```
 
@@ -88,7 +89,8 @@ conda create -n exp_minerl100 python=3.11
 conda activate exp_minerl100
 conda install conda-forge::openjdk=8
 pip install git+https://github.com/minerllabs/minerl
-pip install wandb tensorboard moviepy
+pip install wandb tensorboard moviepy stable-baselines3
+pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
 vglrun python experiments/minerl100_exp.py --image_width 64x64 --load simulation
 ```
 
@@ -99,7 +101,8 @@ conda create -n exp_craftground python=3.11
 conda activate exp_craftground
 conda install conda-forge::openjdk=21 cmake
 pip install craftground
-pip install wandb tensorboard moviepy
+pip install wandb tensorboard moviepy stable-baselines3
+pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
 python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
 ```
 
@@ -107,19 +110,29 @@ python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simu
 Both used vglrun to run the experiments on headless server.
 
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
-| Configuration              | MineRL 1.0.0 | CraftGround RAW | CraftGround ZeroCopy |
-| -------------------------- | ------------ | --------------- | -------------------- |
-| 64x64 Simul                | 57           | 161             | 144                  |
-| 640x360 Simul              | 56           | 131             | 135                  |
-| 64x64 PPO                  | ?            | ?               | ?                    |
-| 640x360 PPO                | ?            | ?               | ?                    |
-| 64x64 Simul Render         | ?            | ?               | ?                    |
-| 640x360 Simul Render       | ?            | ?               | ?                    |
-| 64x64 PPO Render           | ?            | ?               | ?                    |
-| 640x360 PPO Render         | ?            | ?               | ?                    |
-| 64x64 Simul Render Optim   | ?            | ?               | ?                    |
-| 640x360 Simul Render Optim | ?            | ?               | ?                    |
-| 64x64 PPO Render Optim     | ?            | ?               | ?                    |
-| 640x360 PPO Render Optim   | ?            | ?               | ?                    |
+| Configuration            | MineRL 1.0.0 | CraftGround RAW | CraftGround ZeroCopy |
+| ------------------------ | ------------ | --------------- | -------------------- |
+| 64x64 Simul              | 57           | 161             | 144                  |
+| 640x360 Simul            | 56           | 131             | 135                  |
+| 64x64 Render             | ?            | 175             | 135                  |
+| 640x360 Render           | ?            | ?               | ?                    |
+| 64x64 PPO                | ?            | ?               | ?                    |
+| 640x360 PPO              | ?            | ?               | ?                    |
+| 64x64 PPO Render         | ?            | ?               | ?                    |
+| 640x360 PPO Render       | ?            | ?               | ?                    |
+| 64x64  Render Optim      | ?            | ?               | ?                    |
+| 640x360  Render Optim    | ?            | ?               | ?                    |
+| 64x64 PPO Render Optim   | ?            | ?               | ?                    |
+| 640x360 PPO Render Optim | ?            | ?               | ?                    |
 
-Currently CraftGround 640x360 result is actually 640x320. We will re-run the experiment with 640x360 and update the results.
+Currently CraftGround 640x360 Simul result is actually 640x320. We will re-run the experiment with 640x360 and update the results.
+
+
+# TroubleShooting
+```
+FileExistsError: Socket file /tmp/minecraftrl_8001.sock already exists. Please choose another port.
+```
+Then
+```bash
+rm /tmp/minecraftrl_8001.sock 
+```

@@ -13,6 +13,8 @@ import minerl.herobraine.hero.handlers as handlers
 from typing import List
 from minerl.herobraine.hero import handlers as H
 from minerl.herobraine.env_specs.human_controls import SimpleHumanEmbodimentEnvSpec
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 
 from experiments.experiment_setting import MAX_STEPS
 
@@ -72,6 +74,53 @@ def make_minerl_env(
     env = gym.make("MLGWB-v0")
 
     return env
+
+
+# Simulation noop + render using moviepy, not optimized
+def render_check(
+    run,
+    vision_width: int,
+    vision_height: int,
+):
+    env = make_minerl_env(
+        width=vision_width,
+        height=vision_height,
+    )
+    # To record videos, we need to wrap the environment with VecVideoRecorder
+    env = DummyVecEnv([lambda: env])
+    # Record video every 2000 steps and save the video
+    env = VecVideoRecorder(
+        env,
+        f"videos/{run.id}",
+        record_video_trigger=lambda x: x % 2000 == 0,
+        video_length=2000,
+    )
+    try:
+        obs = env.reset()  # DummyVecEnv reset returns only obs
+        start_time = time.time_ns()
+        for i in range(MAX_STEPS):
+            action = [env.action_space.noop()]
+            obs, reward, terminated, info = env.step(
+                action
+            )  # truncated is not provided in VecEnv
+            time_elapsed = max(
+                (time.time_ns() - start_time) / 1e9, sys.float_info.epsilon
+            )
+            fps = int(i / time_elapsed)
+            if i % 512 == 0:
+                wandb.log(
+                    {
+                        "time/iterations": i,
+                        "time/fps": fps,
+                        "time/time_elapsed": int(time_elapsed),
+                        "time/total_timesteps": i,
+                    }
+                )
+            if i % 4000 == 0:
+                print(f"Step: {i}")
+    finally:
+        env.close()
+        run.finish()
 
 
 def simulation_check(
