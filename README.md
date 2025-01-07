@@ -113,14 +113,14 @@ Both used vglrun to run the experiments on headless server.
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
 | Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy |
 | ------------------------ | ----- | --------------- | -------------------- |
-| 64x64 Simul              | 57    | 192             | 146                  |
+| 64x64 Simul              | 57    | 192             | 145                  |
 | 640x360 Simul            | 56    | 140             | 151                  |
 | 64x64 Render             | ?     | 175             | 155                  |
-| 640x360 Render           | ?     | 115             | 120                  |
-| 64x64 PPO                | ?     | ?               | ?                    |
-| 640x360 PPO              | ?     | ?               | ?                    |
-| 64x64 PPO Render         | ?     | ?               | ?                    |
-| 640x360 PPO Render       | ?     | ?               | ?                    |
+| 640x360 Render           | ?     | 115             | 128                  |
+| 64x64 PPO                | ?     | 103             | 87                   |
+| 640x360 PPO              | ?     | 56.5            | 46                   |
+| 64x64 PPO Render         | ?     | 102             | 76                   |
+| 640x360 PPO Render       | ?     | 49              | 47                   |
 | 64x64 Render Optim       | ?     | ?               | ?                    |
 | 640x360 Render Optim     | ?     | ?               | ?                    |
 | 64x64 PPO Render Optim   | ?     | ?               | ?                    |
