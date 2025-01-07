@@ -225,8 +225,10 @@ def do_experiment(mode, image_width, load, port):
 
     if platform.system() == "Darwin":
         group_name = f"craftground-apple-{mode}--{vision_width}-{vision_height}-{load}"
+        print("Running on macOS")
     else:
         group_name = f"craftground-{mode}--{vision_width}-{vision_height}-{load}"
+    print(f"Group name: {group_name}")
     run = wandb.init(
         # set the wandb project where this run will be logged
         project="minecraft-envs-performance-comparison",
