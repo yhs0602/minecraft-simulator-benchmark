@@ -28,6 +28,7 @@ from check_vglrun import check_vglrun
 
 
 from stable_baselines3.common import on_policy_algorithm
+import platform
 
 
 def make_craftground_env(
@@ -222,7 +223,10 @@ def do_experiment(mode, image_width, load, port):
         "640x360": (640, 360),
     }[image_width]
 
-    group_name = f"craftground-{mode}--{vision_width}-{vision_height}-{load}"
+    if platform.system() == "Darwin":
+        group_name = f"craftground-apple-{mode}--{vision_width}-{vision_height}-{load}"
+    else:
+        group_name = f"craftground-{mode}--{vision_width}-{vision_height}-{load}"
     run = wandb.init(
         # set the wandb project where this run will be logged
         project="minecraft-envs-performance-comparison",
