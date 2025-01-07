@@ -3,7 +3,7 @@ This experiment compares the performance of Malmö and Craftground in terms of F
 
 # Performance Comparison
 ## Configurations
-- Targets: MineRL 0.4.4 vs MineRL 1.0.0 vs Craftground RAW vs Craftground ZeroCopy
+- Targets: Malmö(MineRL 0.4.4, MineRL 1.0.0) vs Craftground RAW vs Craftground ZeroCopy
 - Steps: 100_000
 - Image Width:
     - 64 x 64
@@ -110,23 +110,20 @@ python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simu
 Both used vglrun to run the experiments on headless server.
 
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
-| Configuration            | MineRL 1.0.0 | CraftGround RAW | CraftGround ZeroCopy |
-| ------------------------ | ------------ | --------------- | -------------------- |
-| 64x64 Simul              | 57           | 192             | 146                  |
-| 640x360 Simul            | 56           | 140             | 151                  |
-| 64x64 Render             | ?            | 175             | 155                  |
-| 640x360 Render           | ?            | 115             | 120                  |
-| 64x64 PPO                | ?            | ?               | ?                    |
-| 640x360 PPO              | ?            | ?               | ?                    |
-| 64x64 PPO Render         | ?            | ?               | ?                    |
-| 640x360 PPO Render       | ?            | ?               | ?                    |
-| 64x64 Render Optim       | ?            | ?               | ?                    |
-| 640x360 Render Optim     | ?            | ?               | ?                    |
-| 64x64 PPO Render Optim   | ?            | ?               | ?                    |
-| 640x360 PPO Render Optim | ?            | ?               | ?                    |
-
-Currently CraftGround 640x360 Simul result is actually 640x320. We will re-run the experiment with 640x360 and update the results.
-
+| Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy |
+| ------------------------ | ----- | --------------- | -------------------- |
+| 64x64 Simul              | 57    | 192             | 146                  |
+| 640x360 Simul            | 56    | 140             | 151                  |
+| 64x64 Render             | ?     | 175             | 155                  |
+| 640x360 Render           | ?     | 115             | 120                  |
+| 64x64 PPO                | ?     | ?               | ?                    |
+| 640x360 PPO              | ?     | ?               | ?                    |
+| 64x64 PPO Render         | ?     | ?               | ?                    |
+| 640x360 PPO Render       | ?     | ?               | ?                    |
+| 64x64 Render Optim       | ?     | ?               | ?                    |
+| 640x360 Render Optim     | ?     | ?               | ?                    |
+| 64x64 PPO Render Optim   | ?     | ?               | ?                    |
+| 640x360 PPO Render Optim | ?     | ?               | ?                    |
 
 # TroubleShooting
 ```
