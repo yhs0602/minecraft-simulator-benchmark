@@ -80,12 +80,13 @@ def ppo_check(
         if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY:
             env = CPUVisionWrapper(env)
         env = DummyVecEnv([lambda: env])
-        env = VecVideoRecorder(
-            env,
-            f"videos/{run.id}",
-            record_video_trigger=lambda x: x % 2000 == 0,
-            video_length=2000,
-        )
+        if render:
+            env = VecVideoRecorder(
+                env,
+                f"videos/{run.id}",
+                record_video_trigger=lambda x: x % 2000 == 0,
+                video_length=2000,
+            )
     else:
         env = TransposeVisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
         env = DummyTensorVecEnv([lambda: env])
