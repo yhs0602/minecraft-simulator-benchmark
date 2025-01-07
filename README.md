@@ -91,6 +91,7 @@ conda install conda-forge::openjdk=8
 pip install git+https://github.com/minerllabs/minerl
 pip install wandb tensorboard moviepy stable-baselines3
 pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
+conda install -c anaconda cudnn # for ppo
 vglrun python experiments/minerl100_exp.py --image_width 64x64 --load simulation
 ```
 
