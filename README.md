@@ -116,10 +116,10 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 640x360 Simul            | 56    | 140             | 151                  |
 | 64x64 Render             | ?     | 175             | 155                  |
 | 640x360 Render           | ?     | 115             | 128                  |
-| 64x64 PPO                | ?     | 82              | 87                   |
-| 640x360 PPO              | ?     | ?               | 46                   |
-| 64x64 PPO Render         | ?     | ?               | 76                   |
-| 640x360 PPO Render       | ?     | ?               | 47                   |
+| 64x64 PPO                | ?     | 103             | 87                   |
+| 640x360 PPO              | ?     | 56.5            | 46                   |
+| 64x64 PPO Render         | ?     | 102             | 76                   |
+| 640x360 PPO Render       | ?     | 49              | 47                   |
 | 64x64 Render Optim       | ?     | ?               | ?                    |
 | 640x360 Render Optim     | ?     | ?               | ?                    |
 | 64x64 PPO Render Optim   | ?     | ?               | ?                    |
