@@ -130,6 +130,7 @@ def render_check(
     vision_width: int,
     vision_height: int,
     port: int,
+    optimize: bool = False,
 ):
     env = make_craftground_env(
         port=port,
@@ -138,7 +139,7 @@ def render_check(
         screen_encoding_mode=screen_encoding_mode,
     )
     env = VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
-    if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY:
+    if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY and not optimize:
         env = CPUVisionWrapper(env)
 
     # To record videos, we need to wrap the environment with VecVideoRecorder
@@ -252,11 +253,29 @@ def do_experiment(mode, image_width, load, port):
             run, screen_encoding_mode, vision_width, vision_height, port, render=True
         )
     elif load == "optimized_render":
-        raise NotImplementedError("Not implemented yet")
+        render_check(
+            run, screen_encoding_mode, vision_width, vision_height, port, optimize=True
+        )
     elif load == "optimized_ppo":
-        raise NotImplementedError("Not implemented yet")
+        ppo_check(
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=False,
+            optimize=True,
+        )
     elif load == "optimized_render_ppo":
-        raise NotImplementedError("Not implemented yet")
+        ppo_check(
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=True,
+            optimize=True,
+        )
     else:
         raise ValueError(f"Unknown load configuration: {load}")
 
