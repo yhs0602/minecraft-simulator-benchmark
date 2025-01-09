@@ -1,7 +1,17 @@
-# Malmö vs Craftground Performance Comparison experiment
-This experiment compares the performance of Malmö and Craftground in terms of FPS and memory usage. Here we use MineRL which is based on Malmö, because MineRL is most widely used in the research community.
+# Optimizing Minecraft Simulations: Performance Comparison between Malmö and CraftGround
+This experiment compares the performance of [Malmö](https://github.com/microsoft/malmo) and [Craftground](https://github.com/yhs0602/CraftGround) in terms of FPS and memory usage. Here we use [MineRL](https://github.com/minerllabs/minerl) which is based on Malmö, because MineRL is most widely used in the research community.
 
-# Performance Comparison
+## Caveats
+While CraftGround shows significant performance improvements in certain scenarios, there are some caveats to consider:
+
+1. **Feature Gaps**
+   - CraftGround currently does not support some advanced features available in Malmö-based environments, such as multi-agent scenarios, custom mission scripting, or integration with specific competitions like IGLU 2021.
+   - The API interface of CraftGround differs significantly from Malmö, requiring users to adapt their codebase to use it effectively.
+2. **Experimental Nature**: 
+    - CraftGround is a relatively new framework and is still under active development. As a result, some features may be less stable or lack documentation compared to mature Malmö-based environments.
+    - Certain optimizations, such as ZeroCopy mode, achieve high performance by bypassing abstractions and safety checks, which might introduce unexpected behavior in complex scenarios.
+    - The ecosystem and community support for CraftGround are still growing, and users may encounter fewer readily available resources or troubleshooting guides compared to MineRL or Malmö.
+
 ## Configurations
 - Targets: Malmö(MineRL 0.4.4, MineRL 1.0.0) vs Craftground RAW vs Craftground ZeroCopy
 - Steps: 100_000
@@ -22,12 +32,7 @@ This experiment compares the performance of Malmö and Craftground in terms of F
     - Memory Usage
 
 
-# Run options
-- environment: minerl044, minerl100, craftground_raw, craftground_zerocopy
-- image_width: 64x64, 114x64, 640x360
-- load: simulation, render, ppo, render_ppo, optimized_render, optimized_ppo, optimized_render_ppo
-
-# Environment Setup
+## Environment Setup
 - Conda, python=3.11
 - Ubuntu Ubuntu 18.04.6 LTS, cuda driver version 525.105.17, NVIDIA GeForce RTX 3090 Ti, VirtualGL, RAM 188GB, AMD Ryzen Threadripper 3960X 24-Core Processor
 - Apple M1 Pro, single process at once,  single process at once, normal load (not strict setting)
@@ -93,7 +98,14 @@ pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To e
 python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
 ```
 
-# Experiment Results (Frames Per Second, CUDA)
+
+## Run options
+- environment: minerl044, minerl100, craftground_raw, craftground_zerocopy
+- image_width: 64x64, 114x64, 640x360
+- load: simulation, render, ppo, render_ppo, optimized_render, optimized_ppo, optimized_render_ppo
+
+
+## Experiment Results (Frames Per Second, CUDA)
 Both used vglrun to run the experiments on headless server.
 
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
@@ -116,7 +128,7 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 
 * Since the optimized version is not implemented on Malmö and CraftGround RAW mode, the results are the same as the non-optimized version.
 
-# Experiment Results (Frames Per Second, Apple M1 Pro)
+## Experiment Results (Frames Per Second, Apple M1 Pro)
 | Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy |
 | ------------------------ | ----- | --------------- | -------------------- |
 | 64x64 Simul              | -     |                 | 133.5                |
@@ -133,6 +145,8 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 640x360 PPO Optim        |       |                 | ?                    |
 | 64x64 PPO Render Optim   |       |                 | ?                    |
 | 640x360 PPO Render Optim |       |                 | ?                    |
+
+
 
 
 # TroubleShooting
