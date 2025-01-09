@@ -34,6 +34,8 @@ This experiment compares the performance of Malmö and Craftground in terms of F
 
 ### MineRL 0.4.4 (exp_minerl044, on Ubuntu 18.04.6 LTS)
 This may help solving issues such as https://github.com/minerllabs/minerl/issues/788.
+- Use this table to get latest gcc version your OS supports: https://askubuntu.com/a/1163021/901082
+- To solve MixinGradle issue, follow the steps as mentioned here: https://github.com/MineDojo/MineDojo/issues/113#issuecomment-1908997704
 ```bash
 conda create -n exp_minerl044 python=3.11
 conda activate exp_minerl044
@@ -46,7 +48,6 @@ sudo apt update
 sudo apt install -y libxml2-dev libxslt1-dev gfortran libopenblas-dev software-properties-common
 # Ensure you have the latest version of gcc:
 # To check the version of gcc, run `gcc --version`
-# Use this table to get latest gcc version your OS supports: https://askubuntu.com/a/1163021/901082
 sudo apt-get install gcc-10 g++-10
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 120
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 120
@@ -253,6 +254,7 @@ VGL_DISPLAY=:0 vglrun /opt/VirtualGL/bin/glxspheres64
 
 
 ## Running Craftground
+### FileExistsError
 ```
 FileExistsError: Socket file /tmp/minecraftrl_8001.sock already exists. Please choose another port.
 ```
@@ -260,3 +262,17 @@ Then
 ```bash
 rm /tmp/minecraftrl_8001.sock 
 ```
+### Zombie Minecraft process
+```bash
+jps -l # find the pid of something like DevLaunchInjector.Main
+kill -9 <pid>
+```
+
+
+# License
+This repository is basically licensed under the MIT License. However, the following files follows the original license of [stable-baselines3](https://github.com/DLR-RM/stable-baselines3/), which is [MIT License](https://github.com/DLR-RM/stable-baselines3/blob/master/LICENSE):
+- experiments/tensor_optimized/async_vec_video_recorder.py
+- experiments/tensor_optimized/async_video_recorder.py
+- experiments/optim_dummy_vec_env.py
+
+We copied and modified a bit to make it work with tensor observation directly.
