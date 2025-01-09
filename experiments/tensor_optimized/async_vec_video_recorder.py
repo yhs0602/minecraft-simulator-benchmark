@@ -55,9 +55,10 @@ class AsyncTensorVecVideoRecorder(VecEnvWrapper):
             metadata = temp_env.metadata
 
         self.env.metadata = metadata
-        assert (
-            self.env.render_mode == "rgb_array"
-        ), f"The render_mode must be 'rgb_array', not {self.env.render_mode}"
+        assert self.env.render_mode in [
+            "rgb_array",
+            "rgb_array_tensor",
+        ], f"The render_mode must be 'rgb_array' or 'rgb_array_tensor', not {self.env.render_mode}"
 
         self.record_video_trigger = record_video_trigger
         self.video_folder = os.path.abspath(video_folder)
@@ -77,12 +78,11 @@ class AsyncTensorVecVideoRecorder(VecEnvWrapper):
         return obs
 
     def start_video_recorder(self) -> None:
-        self.close_video_recorder()
-
+        # self.close_video_recorder()
         video_name = f"{self.name_prefix}-step-{self.step_id}-to-step-{self.step_id + self.video_length}"
         base_path = os.path.join(self.video_folder, video_name)
-        self.video_recorder = AsyncTensorVideoRecorder(
-            env=self.env, base_path=base_path, metadata={"step_id": self.step_id}
+        self.video_recorder.reset(
+            base_path=base_path, metadata={"step_id": self.step_id}
         )
 
         self.video_recorder.capture_frame()

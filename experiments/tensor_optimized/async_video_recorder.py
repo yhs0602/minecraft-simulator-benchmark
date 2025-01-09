@@ -1,12 +1,16 @@
 """A wrapper for video recording environments by rolling it out, frame by frame."""
 
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import os.path
 import tempfile
+import threading
 from typing import List, Optional
 
 from gymnasium import error, logger
+import torch
 
 
 class AsyncTensorVideoRecorder:
@@ -101,7 +105,58 @@ class AsyncTensorVideoRecorder:
         self.write_metadata()
 
         logger.info(f"Starting new video recorder writing to {self.path}")
-        self.recorded_frames = []
+
+        self.active_buffer: List[torch.Tensor] = []
+        self.background_buffer: List[torch.Tensor] = []
+        self.executor = ThreadPoolExecutor(max_workers=1)
+        self.loop = asyncio.get_event_loop()
+        self.lock = threading.Lock()
+        self._flushing_task = None
+        self.loop_thread = threading.Thread(target=self._start_loop, daemon=True)
+        self.loop_thread.start()
+
+    def _start_loop(self):
+        """Run the event loop in a background thread."""
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
+
+    def _flush_background_buffer(self):
+        try:
+            from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
+        except ImportError as e:
+            raise error.DependencyNotInstalled(
+                "moviepy is not installed, run `pip install moviepy`"
+            ) from e
+        """Flush the background buffer to a video file."""
+        if not self.background_buffer:
+            # No frames captured. Set metadata.
+            if self.metadata is None:
+                self.metadata = {}
+            self.metadata["empty"] = True
+            self.write_metadata()
+            return
+        frames = (frame.numpy() for frame in self.background_buffer)
+        clip = ImageSequenceClip(frames, fps=self.frames_per_sec)
+        moviepy_logger = None if self.disable_logger else "bar"
+        clip.write_videofile(self.path, logger=moviepy_logger)
+        self.background_buffer = []
+
+    def reset(
+        self,
+        metadata: Optional[dict] = None,
+        base_path: Optional[str] = None,
+    ):
+        if not self.enabled or self._closed:
+            return
+
+        if self.active_buffer:
+            self._swap_buffers()
+
+        if self._flushing_task:
+            asyncio.run(self._flushing_task)
+
+        # TODO: do something similar to __init__, but not clearing buffers, metadata, etc.
+        ...
 
     @property
     def functional(self):
@@ -136,34 +191,32 @@ class AsyncTensorVideoRecorder:
                 )
                 self.broken = True
         else:
-            self.recorded_frames.append(frame)
+            with self.lock:
+                self.active_buffer.append(frame.to("cpu", non_blocking=True))
+
+    def _swap_buffers(self):
+        """Swap active and background buffers and process background buffer."""
+        with self.lock:
+            self.active_buffer, self.background_buffer = (
+                self.background_buffer,
+                self.active_buffer,
+            )
+        self._flushing_task = self.loop.run_in_executor(
+            self.executor, self._flush_background_buffer
+        )
 
     def close(self):
         """Flush all data to disk and close any open frame encoders."""
         if not self.enabled or self._closed:
             return
 
-        # Close the encoder
-        if len(self.recorded_frames) > 0:
-            try:
-                from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
-            except ImportError as e:
-                raise error.DependencyNotInstalled(
-                    "moviepy is not installed, run `pip install moviepy`"
-                ) from e
+        if self.active_buffer:
+            self._swap_buffers()
 
-            clip = ImageSequenceClip(self.recorded_frames, fps=self.frames_per_sec)
-            moviepy_logger = None if self.disable_logger else "bar"
-            clip.write_videofile(self.path, logger=moviepy_logger)
-        else:
-            # No frames captured. Set metadata.
-            if self.metadata is None:
-                self.metadata = {}
-            self.metadata["empty"] = True
+        if self._flushing_task:
+            asyncio.run(self._flushing_task)
 
-        self.write_metadata()
-
-        # Stop tracking this for autoclose
+        self.executor.shutdown(wait=True)
         self._closed = True
 
     def write_metadata(self):

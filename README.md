@@ -128,6 +128,25 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 64x64 PPO Render Optim   | *44.5 | *102            | ?                    |
 | 640x360 PPO Render Optim | *29.5 | *49             | ?                    |
 
+# Experiment Results (Apple M1 Pro)
+| Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy |
+| ------------------------ | ----- | --------------- | -------------------- |
+| 64x64 Simul              | -     |                 | 133.5                |
+| 640x360 Simul            |       |                 | 117.5                |
+| 64x64 Render             |       |                 | 144                  |
+| 640x360 Render           |       |                 | 134.5                |
+| 64x64 PPO                |       |                 | 26                   |
+| 640x360 PPO              |       |                 | 13.5                 |
+| 64x64 PPO Render         |       |                 | 25                   |
+| 640x360 PPO Render       |       |                 | 13.5                 |
+| 64x64 Render Optim       |       |                 | ?                    |
+| 640x360 Render Optim     |       |                 | ?                    |
+| 64x64 PPO Optim          |       |                 | ?                    |
+| 640x360 PPO Optim        |       |                 | ?                    |
+| 64x64 PPO Render Optim   |       |                 | ?                    |
+| 640x360 PPO Render Optim |       |                 | ?                    |
+
+
 # TroubleShooting
 ```
 FileExistsError: Socket file /tmp/minecraftrl_8001.sock already exists. Please choose another port.
