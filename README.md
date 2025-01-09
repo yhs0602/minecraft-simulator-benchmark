@@ -107,28 +107,30 @@ pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To e
 python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
 ```
 
-# Experiment Results (Simulation Speed, CUDA version)
+# Experiment Results (Frames Per Second, CUDA)
 Both used vglrun to run the experiments on headless server.
 
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
-| Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy |
-| ------------------------ | ----- | --------------- | -------------------- |
-| 64x64 Simul              | 57    | 192             | 145                  |
-| 640x360 Simul            | 56    | 140             | 151                  |
-| 64x64 Render             | 58.5  | 175             | 155                  |
-| 640x360 Render           | 55    | 115             | 128                  |
-| 64x64 PPO                | 45    | 103             | 87                   |
-| 640x360 PPO              | 33    | 56.5            | 46                   |
-| 64x64 PPO Render         | 44.5  | 102             | 76                   |
-| 640x360 PPO Render       | 29.5  | 49              | 47                   |
-| 64x64 Render Optim       | *58.5 | *175            | ?                    |
-| 640x360 Render Optim     | *55   | *115            | ?                    |
-| 64x64 PPO Optim          | *45   | *103            | ?                    |
-| 640x360 PPO Optim        | *33   | *56.5           | ?                    |
-| 64x64 PPO Render Optim   | *44.5 | *102            | ?                    |
-| 640x360 PPO Render Optim | *29.5 | *49             | ?                    |
+| Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
+| ------------------------ | ----- | --------------- | -------------------- | ------- |
+| 64x64 Simul              | 57    | 192             | 145                  | 3.36x   |
+| 640x360 Simul            | 56    | 140             | 151                  | 2.7x    |
+| 64x64 Render             | 58.5  | 175             | 155                  | 2.99x   |
+| 640x360 Render           | 55    | 115             | 128                  | 2.33x   |
+| 64x64 PPO                | 45    | 103             | 87                   | 2.29x   |
+| 640x360 PPO              | 33    | 56.5            | 46                   | 1.71x   |
+| 64x64 PPO Render         | 44.5  | 102             | 76                   | 2.29x   |
+| 640x360 PPO Render       | 29.5  | 49              | 47                   | 1.66x   |
+| 64x64 Render Optim       | *58.5 | *175            | ?                    |         |
+| 640x360 Render Optim     | *55   | *115            | ?                    |         |
+| 64x64 PPO Optim          | *45   | *103            | ?                    |         |
+| 640x360 PPO Optim        | *33   | *56.5           | ?                    |         |
+| 64x64 PPO Render Optim   | *44.5 | *102            | ?                    |         |
+| 640x360 PPO Render Optim | *29.5 | *49             | ?                    |         |
 
-# Experiment Results (Apple M1 Pro)
+* Since the optimized version is not implemented on Malmö and CraftGround RAW mode, the results are the same as the non-optimized version.
+
+# Experiment Results (Frames Per Second, Apple M1 Pro)
 | Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy |
 | ------------------------ | ----- | --------------- | -------------------- |
 | 64x64 Simul              | -     |                 | 133.5                |
