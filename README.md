@@ -11,6 +11,9 @@ While CraftGround shows significant performance improvements in certain scenario
     - CraftGround is a relatively new framework and is still under active development. As a result, some features may be less stable or lack documentation compared to mature Malmö-based environments.
     - Certain optimizations, such as ZeroCopy mode, achieve high performance by bypassing abstractions and safety checks, which might introduce unexpected behavior in complex scenarios.
     - The ecosystem and community support for CraftGround are still growing, and users may encounter fewer readily available resources or troubleshooting guides compared to MineRL or Malmö.
+  
+> We are exploring the possibility of providing extensions for Malmö-based environments, such as MineRL, to enable the use of CraftGround as a backend with minimal code changes. This could enhance compatibility and performance for users looking for alternative backend solutions.
+
 
 ## Configurations
 - Targets: Malmö(MineRL 0.4.4, MineRL 1.0.0) vs Craftground RAW vs Craftground ZeroCopy
