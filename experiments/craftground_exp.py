@@ -66,6 +66,7 @@ def ppo_check(
     device_id: int = 3,
     render: bool = False,
     use_optimized_sb3: bool = False,
+    max_steps: int = MAX_STEPS,
 ):
     env = make_craftground_env(
         port=port,
@@ -107,7 +108,7 @@ def ppo_check(
     try:
         env.reset()
         model.learn(
-            total_timesteps=MAX_STEPS,
+            total_timesteps=max_steps,
             callback=[
                 # CustomWandbCallback(),
                 WandbCallback(
@@ -131,6 +132,7 @@ def render_check(
     vision_height: int,
     port: int,
     optimize: bool = False,
+    max_steps: int = MAX_STEPS,
 ):
     env = make_craftground_env(
         port=port,
@@ -154,7 +156,7 @@ def render_check(
     try:
         obs = env.reset()  # DummyVecEnv reset returns only obs
         start_time = time.time_ns()
-        for i in range(MAX_STEPS):
+        for i in range(max_steps):
             action = [no_op_v2()]
             obs, reward, terminated, info = env.step(
                 action
@@ -184,6 +186,7 @@ def simulation_check(
     vision_width: int,
     vision_height: int,
     port: int,
+    max_steps: int,
 ):
     env = make_craftground_env(
         port=port,
@@ -193,7 +196,7 @@ def simulation_check(
     )
     obs, info = env.reset()  # info
     start_time = time.time_ns()
-    for i in range(MAX_STEPS):
+    for i in range(max_steps):
         action = no_op_v2()
         obs, reward, terminated, truncated, info = env.step(action)  # truncated
         time_elapsed = max((time.time_ns() - start_time) / 1e9, sys.float_info.epsilon)
@@ -213,7 +216,7 @@ def simulation_check(
     env.terminate()
 
 
-def do_experiment(mode, image_width, load, port):
+def do_experiment(mode, image_width, load, port, max_steps: int):
     screen_encoding_mode = {
         "raw": ScreenEncodingMode.RAW,
         "zerocopy": ScreenEncodingMode.ZEROCOPY,
@@ -241,20 +244,42 @@ def do_experiment(mode, image_width, load, port):
     )
 
     if load == "simulation":
-        simulation_check(screen_encoding_mode, vision_width, vision_height, port)
+        simulation_check(
+            screen_encoding_mode, vision_width, vision_height, port, max_steps
+        )
     elif load == "render":
-        render_check(run, screen_encoding_mode, vision_width, vision_height, port)
+        render_check(
+            run, screen_encoding_mode, vision_width, vision_height, port, max_steps
+        )
     elif load == "ppo":
         ppo_check(
-            run, screen_encoding_mode, vision_width, vision_height, port, render=False
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=False,
+            max_steps=max_steps,
         )
     elif load == "render_ppo":
         ppo_check(
-            run, screen_encoding_mode, vision_width, vision_height, port, render=True
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=True,
+            max_steps=max_steps,
         )
     elif load == "optimized_render":
         render_check(
-            run, screen_encoding_mode, vision_width, vision_height, port, optimize=True
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            optimize=True,
+            max_steps=max_steps,
         )
     elif load == "optimized_ppo":
         ppo_check(
@@ -265,6 +290,7 @@ def do_experiment(mode, image_width, load, port):
             port,
             render=False,
             optimize=True,
+            max_steps=max_steps,
         )
     elif load == "optimized_render_ppo":
         ppo_check(
@@ -275,6 +301,7 @@ def do_experiment(mode, image_width, load, port):
             port,
             render=True,
             optimize=True,
+            max_steps=max_steps,
         )
     else:
         raise ValueError(f"Unknown load configuration: {load}")
@@ -324,6 +351,13 @@ def main():
         help="Port number to use for the environment.",
     )
 
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=MAX_STEPS,
+        help="Maximum number of steps to run the experiment.",
+    )
+
     args = parser.parse_args()
 
     # Display the selected configuration
@@ -332,8 +366,9 @@ def main():
     print(f"Load: {args.load}")
     print(f"Mode: {args.mode}")
     print(f"Port: {args.port}")
+    print(f"Max Steps: {args.max_steps}")
 
-    do_experiment(args.mode, args.image_width, args.load, args.port)
+    do_experiment(args.mode, args.image_width, args.load, args.port, args.max_steps)
 
 
 if __name__ == "__main__":
