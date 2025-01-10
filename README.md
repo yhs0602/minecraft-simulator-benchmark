@@ -134,7 +134,7 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 ## Experiment Results (Frames Per Second, Apple M1 Pro)
 | Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy |
 | ------------------------ | ----- | --------------- | -------------------- |
-| 64x64 Simul              | -     | 183.3           | 133.5                |
+| 64x64 Simul              | -     | 138             | 133.5                |
 | 640x360 Simul            |       | 90.5            | 117.5                |
 | 64x64 Render             |       | 129             | 144                  |
 | 640x360 Render           |       | 111.5           | 134.5                |
