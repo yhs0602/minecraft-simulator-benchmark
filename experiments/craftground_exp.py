@@ -9,6 +9,7 @@ from experiments.optim_dummy_vec_env import (
     patched_obs_as_tensor,
     TensorRolloutBuffer,
 )
+from experiments.sbx.sbx_craftground_exp import sbx_ppo_check
 from experiments.transpose_vision_wrapper import TransposeVisionWrapper
 from experiments.tree_wrapper import TreeWrapper
 from get_device import get_device
@@ -294,6 +295,50 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
         )
     elif load == "optimized_render_ppo":
         ppo_check(
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=True,
+            optimize=True,
+            max_steps=max_steps,
+        )
+    elif load == "sbx-ppo":
+        sbx_ppo_check(
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=True,
+            optimize=True,
+            max_steps=max_steps,
+        )
+    elif load == "render_sbx-ppo":
+        sbx_ppo_check(
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=True,
+            optimize=True,
+            max_steps=max_steps,
+        )
+    elif load == "optimized_sbx-ppo":
+        sbx_ppo_check(
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=True,
+            optimize=True,
+            max_steps=max_steps,
+        )
+    elif load == "optimized_render_sbx-ppo":
+        sbx_ppo_check(
             run,
             screen_encoding_mode,
             vision_width,
