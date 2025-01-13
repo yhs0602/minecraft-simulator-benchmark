@@ -2,8 +2,8 @@ import argparse
 import sys
 import time
 from craftground.screen_encoding_modes import ScreenEncodingMode
-from craftground.initial_environment_config import DaylightMode
 import wandb
+from experiments.make_craftground_env import make_craftground_env
 from experiments.optim_dummy_vec_env import (
     DummyTensorVecEnv,
     patched_obs_as_tensor,
@@ -15,46 +15,15 @@ from experiments.tree_wrapper import TreeWrapper
 from get_device import get_device
 from experiments.cpu_wrapper import CPUVisionWrapper
 from experiments.experiment_setting import MAX_STEPS
-import gymnasium as gym
-import craftground
-from craftground import InitialEnvironmentConfig, ActionSpaceVersion
 from craftground.wrappers.vision import VisionWrapper
 from craftground.minecraft import no_op_v2
 from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 from stable_baselines3 import PPO
 from wandb.integration.sb3 import WandbCallback
 
-from check_vglrun import check_vglrun
-
 
 from stable_baselines3.common import on_policy_algorithm
 import platform
-
-
-def make_craftground_env(
-    port: int,
-    width: int,
-    height: int,
-    screen_encoding_mode: ScreenEncodingMode,
-    verbose_python: bool = False,
-    verbose_gradle: bool = True,
-    verbose_jvm: bool = True,
-) -> gym.Env:
-    return craftground.make(
-        port=port,
-        initial_env_config=InitialEnvironmentConfig(
-            image_width=width,
-            image_height=height,
-            hud_hidden=False,
-            render_distance=11,
-            screen_encoding_mode=screen_encoding_mode,
-        ).set_daylight_cycle_mode(DaylightMode.ALWAYS_DAY),
-        action_space_version=ActionSpaceVersion.V2_MINERL_HUMAN,
-        use_vglrun=check_vglrun(),
-        verbose_python=verbose_python,
-        verbose_gradle=verbose_gradle,
-        verbose_jvm=verbose_jvm,
-    )
 
 
 def ppo_check(

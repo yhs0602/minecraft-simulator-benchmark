@@ -1,6 +1,6 @@
 from craftground.screen_encoding_modes import ScreenEncodingMode
 from experiments import get_device
-from experiments.craftground_exp import make_craftground_env
+from experiments.make_craftground_env import make_craftground_env
 from experiments.experiment_setting import MAX_STEPS
 from experiments.optim_dummy_vec_env import (
     DummyTensorVecEnv,
