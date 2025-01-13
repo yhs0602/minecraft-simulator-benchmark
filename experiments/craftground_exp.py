@@ -9,7 +9,7 @@ from experiments.optim_dummy_vec_env import (
     patched_obs_as_tensor,
     TensorRolloutBuffer,
 )
-from experiments.sbx.sbx_craftground_exp import sbx_ppo_check
+from experiments.sbx_exp.sbx_craftground_exp import sbx_ppo_check
 from experiments.transpose_vision_wrapper import TransposeVisionWrapper
 from experiments.tree_wrapper import TreeWrapper
 from get_device import get_device
@@ -20,7 +20,6 @@ import craftground
 from craftground import InitialEnvironmentConfig, ActionSpaceVersion
 from craftground.wrappers.vision import VisionWrapper
 from craftground.minecraft import no_op_v2
-from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 from stable_baselines3 import PPO
 from wandb.integration.sb3 import WandbCallback
