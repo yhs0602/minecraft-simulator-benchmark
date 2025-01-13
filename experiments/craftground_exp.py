@@ -269,7 +269,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             vision_height,
             port,
             render=True,
-            optimize=True,
+            use_optimized_sb3=True,
             max_steps=max_steps,
         )
     elif load == "sbx-ppo":
@@ -280,7 +280,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             vision_height,
             port,
             render=True,
-            optimize=True,
+            use_optimized_sb3=True,
             max_steps=max_steps,
         )
     elif load == "render_sbx-ppo":
@@ -291,7 +291,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             vision_height,
             port,
             render=True,
-            optimize=True,
+            use_optimized_sb3=True,
             max_steps=max_steps,
         )
     elif load == "optimized_sbx-ppo":
@@ -302,7 +302,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             vision_height,
             port,
             render=True,
-            optimize=True,
+            use_optimized_sb3=True,
             max_steps=max_steps,
         )
     elif load == "optimized_render_sbx-ppo":
@@ -313,7 +313,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             vision_height,
             port,
             render=True,
-            optimize=True,
+            use_optimized_sb3=True,
             max_steps=max_steps,
         )
     else:
