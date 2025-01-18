@@ -98,6 +98,13 @@ sudo apt install libglew-dev libpng-dev zlib1g-dev
 pip install craftground
 pip install wandb tensorboard moviepy stable-baselines3
 pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
+# Test SBX, install JAX and Jaxlib
+pip install jax jaxlib sbx
+# On apple, to use metal backend
+pip install jax-metal
+# On other systems, to use cuda backend
+pip install jaxlib
+
 python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
 ```
 
@@ -139,11 +146,11 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 64x64 Render             |       | 129             | 144                  |
 | 640x360 Render           |       | 111.5           | 134.5                |
 | 64x64 PPO                |       | 26              | 26                   |
-| 64x64 PPO(SBX, CPU)      |       | 120             | -                    |
-| 64x64 PPO(SBX, MPS)      |       | 154             | -                    |
+| 64x64 PPO(SBX, CPU)      |       | 106             | -                    |
+| 64x64 PPO(SBX, MPS)      |       | 126.5           | -                    |
 | 640x360 PPO              |       | 13              | 13.5                 |
 | 640x360 PPO (SBX, CPU)   |       | -               | -                    |
-| 640x360 PPO (SBX, MPS)   |       | -               | -                    |
+| 640x360 PPO (SBX, MPS)   |       | 38              | -                    |
 | 64x64 PPO Render         |       | 27.5            | 25                   |
 | 64x64 PPO Render (SBX)   |       | -               | -                    |
 | 640x360 PPO Render       |       | 13              | 13.5                 |

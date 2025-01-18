@@ -32,7 +32,7 @@ def ppo_check(
     vision_width: int,
     vision_height: int,
     port: int,
-    device_id: int = 3,
+    device: str,
     render: bool = False,
     use_optimized_sb3: bool = False,
     max_steps: int = MAX_STEPS,
@@ -67,7 +67,7 @@ def ppo_check(
         "CnnPolicy",
         env,
         verbose=1,
-        device=get_device(device_id),
+        device=device,
         tensorboard_log=f"runs/{run.id}",
         gae_lambda=0.99,
         ent_coef=0.005,
@@ -185,7 +185,7 @@ def simulation_check(
     env.terminate()
 
 
-def do_experiment(mode, image_width, load, port, max_steps: int):
+def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
     screen_encoding_mode = {
         "raw": ScreenEncodingMode.RAW,
         "zerocopy": ScreenEncodingMode.ZEROCOPY,
@@ -196,11 +196,15 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
         "640x360": (640, 360),
     }[image_width]
 
+    if device == "cpu":
+        group_name = "cpu-"
+    else:
+        group_name = ""
     if platform.system() == "Darwin":
-        group_name = f"craftground-apple-{mode}--{vision_width}-{vision_height}-{load}"
+        group_name += f"craftground-apple-{mode}--{vision_width}-{vision_height}-{load}"
         print("Running on macOS")
     else:
-        group_name = f"craftground-{mode}--{vision_width}-{vision_height}-{load}"
+        group_name += f"craftground-{mode}--{vision_width}-{vision_height}-{load}"
     print(f"Group name: {group_name}")
     run = wandb.init(
         # set the wandb project where this run will be logged
@@ -229,6 +233,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             port,
             render=False,
             max_steps=max_steps,
+            device=device,
         )
     elif load == "render_ppo":
         ppo_check(
@@ -239,6 +244,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             port,
             render=True,
             max_steps=max_steps,
+            device=device,
         )
     elif load == "optimized_render":
         render_check(
@@ -260,6 +266,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             render=False,
             optimize=True,
             max_steps=max_steps,
+            device=device,
         )
     elif load == "optimized_render_ppo":
         ppo_check(
@@ -271,6 +278,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             render=True,
             use_optimized_sb3=True,
             max_steps=max_steps,
+            device=device,
         )
     elif load == "sbx-ppo":
         sbx_ppo_check(
@@ -282,6 +290,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             render=True,
             use_optimized_sb3=True,
             max_steps=max_steps,
+            device=device,
         )
     elif load == "render_sbx-ppo":
         sbx_ppo_check(
@@ -293,6 +302,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             render=True,
             use_optimized_sb3=True,
             max_steps=max_steps,
+            device=device,
         )
     elif load == "optimized_sbx-ppo":
         sbx_ppo_check(
@@ -304,6 +314,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             render=True,
             use_optimized_sb3=True,
             max_steps=max_steps,
+            device=device,
         )
     elif load == "optimized_render_sbx-ppo":
         sbx_ppo_check(
@@ -315,6 +326,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int):
             render=True,
             use_optimized_sb3=True,
             max_steps=max_steps,
+            device=device,
         )
     else:
         raise ValueError(f"Unknown load configuration: {load}")
@@ -362,6 +374,13 @@ def main():
     )
 
     parser.add_argument(
+        "--device",
+        type=str,
+        default=get_device(3),
+        help="Device to use for the experiment.",
+    )
+
+    parser.add_argument(
         "--port",
         type=int,
         default=8001,
@@ -385,7 +404,9 @@ def main():
     print(f"Port: {args.port}")
     print(f"Max Steps: {args.max_steps}")
 
-    do_experiment(args.mode, args.image_width, args.load, args.port, args.max_steps)
+    do_experiment(
+        args.mode, args.image_width, args.load, args.port, args.max_steps, args.device
+    )
 
 
 if __name__ == "__main__":

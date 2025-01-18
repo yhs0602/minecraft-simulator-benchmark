@@ -25,7 +25,7 @@ def sbx_ppo_check(
     vision_width: int,
     vision_height: int,
     port: int,
-    device_id: int = 3,
+    device: str,
     render: bool = False,
     use_optimized_sb3: bool = False,
     max_steps: int = MAX_STEPS,
@@ -60,7 +60,7 @@ def sbx_ppo_check(
         "CnnPolicy",  # Cnn
         env,
         verbose=1,
-        device=get_device(device_id),
+        device=device,
         tensorboard_log=f"runs/{run.id}",
         gae_lambda=0.99,
         ent_coef=0.005,
