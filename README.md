@@ -139,9 +139,11 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 64x64 Render             |       | 129             | 144                  |
 | 640x360 Render           |       | 111.5           | 134.5                |
 | 64x64 PPO                |       | 26              | 26                   |
-| 64x64 PPO(SBX)           |       | 120             | -                    |
+| 64x64 PPO(SBX, CPU)      |       | 120             | -                    |
+| 64x64 PPO(SBX, MPS)      |       | 154             | -                    |
 | 640x360 PPO              |       | 13              | 13.5                 |
-| 640x360 PPO (SBX)        |       | -               | -                    |
+| 640x360 PPO (SBX, CPU)   |       | -               | -                    |
+| 640x360 PPO (SBX, MPS)   |       | -               | -                    |
 | 64x64 PPO Render         |       | 27.5            | 25                   |
 | 64x64 PPO Render (SBX)   |       | -               | -                    |
 | 640x360 PPO Render       |       | 13              | 13.5                 |
