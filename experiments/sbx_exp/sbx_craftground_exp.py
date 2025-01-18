@@ -57,7 +57,7 @@ def sbx_ppo_check(
         on_policy_algorithm.RolloutBuffer = TensorRolloutBuffer
 
     model = PPO(
-        "MlpPolicy",  # Cnn
+        "CnnPolicy",  # Cnn
         env,
         verbose=1,
         device=get_device(device_id),
