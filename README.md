@@ -85,7 +85,18 @@ pip install git+https://github.com/minerllabs/minerl
 pip install wandb tensorboard moviepy stable-baselines3
 pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
 conda install -c anaconda cudnn # for ppo
+# On cuda devices
+pip install jax[cuda]
+# On apple devices
+pip install jax-metal
 vglrun python experiments/minerl100_exp.py --image_width 64x64 --load simulation
+```
+
+### MineRL 1.0.0 on MacOS
+We should apply  https://github.com/MineDojo/MineDojo/pull/56/ to make it work on MacOS.
+```gradle
+    def schemaIndexFile = new File('src/main/resources/schemas.index')
+    def schemaIndexFile = new File("$projectDir/src/main/resources/schemas.index")
 ```
 
 ### Craftground
