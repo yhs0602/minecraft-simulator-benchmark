@@ -138,27 +138,42 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 
 * Since the optimized version is not implemented on Malmö and CraftGround RAW mode, the results are the same as the non-optimized version.
 
+## Experiment Results (Frames Per Second, CUDA, SBX: TODO)
+| Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
+| ------------------------ | ----- | --------------- | -------------------- | ------- |
+| 64x64 PPO                |       |                 |                      |         |
+| 640x360 PPO              |       |                 |                      |         |
+| 64x64 PPO Render         |       |                 |                      |         |
+| 640x360 PPO Render       |       |                 |                      |         |
+| 64x64 PPO Optim          |       |                 |                      |         |
+| 640x360 PPO Optim        |       |                 |                      |         |
+| 64x64 PPO Render Optim   |       |                 |                      |         |
+| 640x360 PPO Render Optim |       |                 |                      |         |
+
+
 ## Experiment Results (Frames Per Second, Apple M1 Pro)
-| Configuration                 | Malmö | CraftGround RAW | CraftGround ZeroCopy |
-| ----------------------------- | ----- | --------------- | -------------------- |
-| 64x64 Simul                   | -     | 138             | 133.5                |
-| 640x360 Simul                 |       | 90.5            | 117.5                |
-| 64x64 Render                  |       | 129             | 144                  |
-| 640x360 Render                |       | 111.5           | 134.5                |
-| 64x64 PPO                     |       | 26              | 26                   |
-| 64x64 PPO(SBX, CPU)           |       | 133.5           | -                    |
-| 64x64 PPO(SBX, MPS)           |       | 103             | -                    |
-| 640x360 PPO                   |       | 13              | 13.5                 |
-| 640x360 PPO (SBX, CPU)        |       | 12              | -                    |
-| 640x360 PPO (SBX, MPS)        |       | 44              | -                    |
-| 64x64 PPO Render              |       | 27.5            | 25                   |
-| 64x64 PPO Render (SBX, CPU)   |       | 147             | -                    |
-| 64x64 PPO Render (SBX, MPS)   |       | 103             | -                    |
-| 640x360 PPO Render            |       | 13              | 13.5                 |
-| 640x360 PPO Render (SBX, CPU) |       | 11.5            | -                    |
-| 640x360 PPO Render (SBX, MPS) |       | 42.5            | -                    |
+| Configuration      | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
+| ------------------ | ----- | --------------- | -------------------- | ------- |
+| 64x64 Simul        | -     | 138             | 133.5                |         |
+| 640x360 Simul      |       | 90.5            | 117.5                |         |
+| 64x64 Render       |       | 129             | 144                  |         |
+| 640x360 Render     |       | 111.5           | 134.5                |         |
+| 64x64 PPO          |       | 26              | 26                   |         |
+| 640x360 PPO        |       | 13              | 13.5                 |         |
+| 64x64 PPO Render   |       | 27.5            | 25                   |         |
+| 640x360 PPO Render |       | 13              | 13.5                 |         |
 
-
+## Experiment Results (Frames Per Second, Apple M1 Pro, SBX)
+| Configuration                 | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
+| ----------------------------- | ----- | --------------- | -------------------- | ------- |
+| 64x64 PPO(SBX, CPU)           |       | 133.5           | -                    |         |
+| 64x64 PPO(SBX, MPS)           |       | 103             | -                    |         |
+| 640x360 PPO (SBX, CPU)        |       | 12              | -                    |         |
+| 640x360 PPO (SBX, MPS)        |       | 44              | -                    |         |
+| 64x64 PPO Render (SBX, CPU)   |       | 147             | -                    |         |
+| 64x64 PPO Render (SBX, MPS)   |       | 103             | -                    |         |
+| 640x360 PPO Render (SBX, CPU) |       | 11.5            | -                    |         |
+| 640x360 PPO Render (SBX, MPS) |       | 42.5            | -                    |         |
 
 
 # TroubleShooting
