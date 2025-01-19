@@ -96,6 +96,9 @@ vglrun python experiments/minerl100_exp.py --image_width 64x64 --load simulation
 We should apply  https://github.com/MineDojo/MineDojo/pull/56/ to make it work on MacOS.
 ```gradle
     def schemaIndexFile = new File('src/main/resources/schemas.index')
+```
+to
+```gradle
     def schemaIndexFile = new File("$projectDir/src/main/resources/schemas.index")
 ```
 
