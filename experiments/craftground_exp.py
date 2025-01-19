@@ -2,6 +2,7 @@ import argparse
 import sys
 import time
 from craftground.screen_encoding_modes import ScreenEncodingMode
+import jax
 import wandb
 from experiments.make_craftground_env import make_craftground_env
 from experiments.optim_dummy_vec_env import (
@@ -198,6 +199,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
 
     if device == "cpu":
         group_name = "cpu-"
+        jax.config.update("jax_platform_name", "cpu")
     else:
         group_name = ""
     if platform.system() == "Darwin":
