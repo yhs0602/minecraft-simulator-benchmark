@@ -1,0 +1,9 @@
+python experiments/craftground_exp.py --mode raw --image_width 64x64 --load sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 64x64 --load sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 64x64 --load sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 64x64 --load render_sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 64x64 --load render_sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 640x360 --load sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 640x360 --load sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 640x360 --load render_sbx-ppo
+python experiments/craftground_exp.py --mode raw --image_width 640x360 --load render_sbx-ppo
