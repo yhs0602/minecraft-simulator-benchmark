@@ -1,21 +1,20 @@
 import argparse
-import logging
+import platform
 import sys
 import time
+import jax
 import wandb
 import gym
 import minerl  # noqa
 
 
-from minerl.herobraine.env_specs.simple_embodiment import SimpleEmbodimentEnvSpec
 from minerl.herobraine.hero.handler import Handler
 import minerl.herobraine.hero.handlers as handlers
 from typing import List
-from minerl.herobraine.hero import handlers as H
 from minerl.herobraine.env_specs.human_controls import SimpleHumanEmbodimentEnvSpec
-from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 from stable_baselines3 import PPO
+from sbx import PPO as JAXPPO
 from wandb.integration.sb3 import WandbCallback
 from experiments.minerl_tree_wrapper import MineRLTreeWrapper
 from get_device import get_device
@@ -82,6 +81,60 @@ def make_minerl_env(
     return env
 
 
+def sbx_ppo_check(
+    run,
+    vision_width: int,
+    vision_height: int,
+    device: str,
+    render: bool = False,
+    use_optimized_sb3: bool = False,
+    max_steps: int = MAX_STEPS,
+):
+    base_env = make_minerl_env(
+        width=vision_width,
+        height=vision_height,
+    )
+    base_env = MineRLTreeWrapper(base_env)
+    env = DummyVecEnv([lambda: base_env])
+    env.render_mode = "rgb_array"
+    if render:
+        # Record video every 2000 steps and save the video
+        env = VecVideoRecorder(
+            env,
+            f"videos/{run.id}",
+            record_video_trigger=lambda x: x % 2000 == 0,
+            video_length=2000,
+        )
+    model = JAXPPO(
+        "CnnPolicy",
+        env,
+        verbose=1,
+        device=device,
+        tensorboard_log=f"runs/{run.id}",
+        gae_lambda=0.99,
+        ent_coef=0.005,
+        n_steps=512,
+    )
+
+    try:
+        env.reset()
+        model.learn(
+            total_timesteps=max_steps,
+            callback=[
+                # CustomWandbCallback(),
+                WandbCallback(
+                    gradient_save_freq=500,
+                    model_save_path=f"models/{run.id}",
+                    verbose=2,
+                ),
+            ],
+        )
+        # model.save(f"ckpts/{run.group}-{run.name}.ckpt")
+    finally:
+        env.close()
+        run.finish()
+
+
 def ppo_check(
     run,
     vision_width: int,
@@ -89,6 +142,7 @@ def ppo_check(
     device_id: int = 3,
     render: bool = False,
     use_optimized_sb3: bool = False,
+    max_steps: int = MAX_STEPS,
 ):
     base_env = make_minerl_env(
         width=vision_width,
@@ -119,7 +173,7 @@ def ppo_check(
     try:
         env.reset()
         model.learn(
-            total_timesteps=MAX_STEPS,
+            total_timesteps=max_steps,
             callback=[
                 # CustomWandbCallback(),
                 WandbCallback(
@@ -214,14 +268,25 @@ def simulation_check(
             print(f"Step: {i}")
 
 
-def do_experiment(image_width, load):
+def do_experiment(image_width, load, device: str, steps: int):
     vision_width, vision_height = {
         "64x64": (64, 64),
         "114x64": (114, 64),
         "640x360": (640, 360),
     }[image_width]
 
-    group_name = f"minerl100--{vision_width}-{vision_height}-{load}"
+    if device == "cpu":
+        group_name = "cpu-"
+        jax.config.update("jax_platform_name", "cpu")
+    else:
+        group_name = ""
+    if platform.system() == "Darwin":
+        group_name += f"minerl100-apple--{vision_width}-{vision_height}-{load}"
+        print("Running on macOS")
+    else:
+        group_name += f"minerl100--{vision_width}-{vision_height}-{load}"
+    print(f"Group name: {group_name}")
+
     run = wandb.init(
         # set the wandb project where this run will be logged
         project="minecraft-envs-performance-comparison",
@@ -245,6 +310,24 @@ def do_experiment(image_width, load):
     elif load == "optimized_ppo":
         pass
     elif load == "optimized_render_ppo":
+        pass
+    elif load == "sbx-ppo":
+        sbx_ppo_check(
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            render=True,
+            use_optimized_sb3=True,
+            max_steps=max_steps,
+            device=device,
+        )
+    elif load == "render_sbx-ppo":
+        pass
+    elif load == "optimized_sbx-ppo":
+        pass
+    elif load == "optimized_render_sbx-ppo":
         pass
     else:
         raise ValueError(f"Unknown load configuration: {load}")
@@ -273,9 +356,27 @@ def main():
             "optimized_render",
             "optimized_ppo",
             "optimized_render_ppo",
+            "sbx-ppo",
+            "render_sbx-ppo",
+            "optimized_sbx-ppo",
+            "optimized_render_sbx-ppo",
         ],
         required=True,
         help="Specify the load configuration.",
+    )
+
+    parser.add_argument(
+        "--device",
+        type=str,
+        default=get_device(3),
+        help="Device to use for the experiment.",
+    )
+
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=MAX_STEPS,
+        help="Maximum number of steps to run the experiment.",
     )
 
     args = parser.parse_args()
@@ -284,7 +385,7 @@ def main():
     print(f"Running experiment with the following settings:")
     print(f"Image Width: {args.image_width}")
     print(f"Load: {args.load}")
-    do_experiment(args.image_width, args.load)
+    do_experiment(args.image_width, args.load, args.device, args.max_steps)
 
 
 if __name__ == "__main__":

@@ -101,6 +101,10 @@ to
 ```gradle
     def schemaIndexFile = new File("$projectDir/src/main/resources/schemas.index")
 ```
+or use the patched version:
+```
+pip install git+https://github.com/yhs0602/minerl  
+```
 
 ### Craftground
 Latest cmake is required for Craftground to ensure it find the cuda libraries correctly.
