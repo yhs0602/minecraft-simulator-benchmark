@@ -197,11 +197,12 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
         "640x360": (640, 360),
     }[image_width]
 
+    group_name = "v2-"
     if device == "cpu":
-        group_name = "cpu-"
+        group_name += "cpu-"
         jax.config.update("jax_platform_name", "cpu")
     else:
-        group_name = ""
+        group_name += ""
     if platform.system() == "Darwin":
         group_name += f"craftground-apple-{mode}--{vision_width}-{vision_height}-{load}"
         print("Running on macOS")
@@ -289,8 +290,8 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             vision_width,
             vision_height,
             port,
-            render=True,
-            use_optimized_sb3=True,
+            render=False,
+            use_optimized_sb3=False,
             max_steps=max_steps,
             device=device,
         )
@@ -302,7 +303,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             vision_height,
             port,
             render=True,
-            use_optimized_sb3=True,
+            use_optimized_sb3=False,
             max_steps=max_steps,
             device=device,
         )
@@ -313,7 +314,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             vision_width,
             vision_height,
             port,
-            render=True,
+            render=False,
             use_optimized_sb3=True,
             max_steps=max_steps,
             device=device,

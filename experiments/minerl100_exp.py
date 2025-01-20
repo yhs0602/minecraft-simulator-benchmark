@@ -268,18 +268,19 @@ def simulation_check(
             print(f"Step: {i}")
 
 
-def do_experiment(image_width, load, device: str, steps: int):
+def do_experiment(image_width, load, device: str, max_steps: int):
     vision_width, vision_height = {
         "64x64": (64, 64),
         "114x64": (114, 64),
         "640x360": (640, 360),
     }[image_width]
 
+    group_name = "v2-"
     if device == "cpu":
-        group_name = "cpu-"
+        group_name += "cpu-"
         jax.config.update("jax_platform_name", "cpu")
     else:
-        group_name = ""
+        group_name += ""
     if platform.system() == "Darwin":
         group_name += f"minerl100-apple--{vision_width}-{vision_height}-{load}"
         print("Running on macOS")
@@ -314,21 +315,43 @@ def do_experiment(image_width, load, device: str, steps: int):
     elif load == "sbx-ppo":
         sbx_ppo_check(
             run,
-            screen_encoding_mode,
             vision_width,
             vision_height,
-            port,
+            render=False,
+            use_optimized_sb3=False,
+            max_steps=max_steps,
+            device=device,
+        )
+    elif load == "render_sbx-ppo":
+        sbx_ppo_check(
+            run,
+            vision_width,
+            vision_height,
+            render=True,
+            use_optimized_sb3=False,
+            max_steps=max_steps,
+            device=device,
+        )
+    elif load == "optimized_sbx-ppo":
+        sbx_ppo_check(
+            run,
+            vision_width,
+            vision_height,
+            render=False,
+            use_optimized_sb3=True,
+            max_steps=max_steps,
+            device=device,
+        )
+    elif load == "optimized_render_sbx-ppo":
+        sbx_ppo_check(
+            run,
+            vision_width,
+            vision_height,
             render=True,
             use_optimized_sb3=True,
             max_steps=max_steps,
             device=device,
         )
-    elif load == "render_sbx-ppo":
-        pass
-    elif load == "optimized_sbx-ppo":
-        pass
-    elif load == "optimized_render_sbx-ppo":
-        pass
     else:
         raise ValueError(f"Unknown load configuration: {load}")
 
