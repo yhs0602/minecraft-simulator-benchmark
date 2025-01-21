@@ -17,7 +17,7 @@ from get_device import get_device
 from experiments.cpu_wrapper import CPUVisionWrapper
 from experiments.experiment_setting import MAX_STEPS
 from craftground.wrappers.vision import VisionWrapper
-from craftground.minecraft import no_op_v2
+from craftground.environment.action_space import no_op_v2
 from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 from stable_baselines3 import PPO
 from wandb.integration.sb3 import WandbCallback

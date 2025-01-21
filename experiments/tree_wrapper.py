@@ -1,7 +1,7 @@
 import gymnasium
 from typing import SupportsFloat, Any
 from gymnasium.core import WrapperActType, WrapperObsType
-from craftground.minecraft import no_op_v2
+from craftground.environment.action_space import no_op_v2
 
 
 class TreeWrapper(gymnasium.Wrapper):
