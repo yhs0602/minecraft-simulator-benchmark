@@ -159,14 +159,14 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 ## Experiment Results (Frames Per Second, CUDA, SBX)
 | Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
 | ------------------------ | ----- | --------------- | -------------------- | ------- |
-| 64x64 PPO(CPU)           | 45.6  | 102.6           |                      | 2.25x   |
-| 64x64 PPO(CUDA)          | 55    | 264.5           |                      | 4.81x   |
+| 64x64 PPO(CPU)           | 45.6  | 131.6           |                      | 2.89x   |
+| 64x64 PPO(CUDA)          | 55    | 230.3           |                      | 4.19x   |
 | 640x360 PPO(CPU)         | 19    | 23              |                      | 1.21x   |
-| 640x360 PPO(CUDA)        | 34    | 50.5            |                      | 1.49x   |
-| 64x64 PPO Render(CPU)    | 45.3  | 101             |                      | 2.23x   |
-| 64x64 PPO Render(CUDA)   | 54.6  | 142             |                      | 2.60x   |
+| 640x360 PPO(CUDA)        | 34    | 53              |                      | 1.56x   |
+| 64x64 PPO Render(CPU)    | 45.3  | 94              |                      | 2.08x   |
+| 64x64 PPO Render(CUDA)   | 54.6  | 274             |                      | 5.02x   |
 | 640x360 PPO Render(CPU)  | 18.5  | 23.5            |                      | 1.27x   |
-| 640x360 PPO Render(CUDA) | 34    | 52.5            |                      | 1.54x   |
+| 640x360 PPO Render(CUDA) | 34    | 47.5            |                      | 1.40x   |
 
 
 ## Experiment Results (Frames Per Second, Apple M1 Pro)
