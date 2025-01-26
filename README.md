@@ -327,6 +327,33 @@ jps -l # find the pid of something like DevLaunchInjector.Main
 kill -9 <pid>
 ```
 
+# Setup on windows
+Note: you may need to enable long file path due to windows limitation. You can enable it by editing registry as mentioned [here](https://docs.python.org/3/using/windows.html#removing-the-max-path-limitation)
+
+> In the latest versions of Windows, this limitation can be expanded to approximately 32,000 characters. Your administrator will need to activate the “Enable Win32 long paths” group policy, or set LongPathsEnabled to 1 in the registry key HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem.
+
+The following command does.
+```cmd
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
+```
+
+
+```ps
+conda create -n exp_craftground python=3.11
+conda activate exp_craftground
+conda install conda-forge::openjdk=21 conda-forge::cmake conda-forge::glew conda-forge::libpng conda-forge::libzlib
+pip install craftground
+pip install wandb tensorboard moviepy stable-baselines3
+pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
+# Test SBX, install JAX and Jaxlib
+pip install jax jaxlib sbx
+# On other systems, to use cuda backend
+pip install jaxlib
+pip install git+https://github.com/yhs0602/sbx-gpu
+$env:PYTHONPATH = "."
+python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simulation
+```
+
 
 # License
 This repository is basically licensed under the MIT License. However, the following files follows the original license of [stable-baselines3](https://github.com/DLR-RM/stable-baselines3/), which is [MIT License](https://github.com/DLR-RM/stable-baselines3/blob/master/LICENSE):
