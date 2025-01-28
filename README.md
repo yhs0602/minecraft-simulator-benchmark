@@ -111,8 +111,7 @@ Latest cmake is required for Craftground to ensure it find the cuda libraries co
 ```bash
 conda create -n exp_craftground python=3.11
 conda activate exp_craftground
-conda install conda-forge::openjdk=21 cmake
-sudo apt install libglew-dev libpng-dev zlib1g-dev
+conda install conda-forge::openjdk=21 conda-forge::cmake conda-forge::glew conda-forge::libpng conda-forge::libzlib conda-forge::libopengl conda-forge::libflite
 pip install craftground
 pip install wandb tensorboard moviepy stable-baselines3
 pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
@@ -345,9 +344,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /
 ```ps
 conda create -n exp_craftground python=3.11
 conda activate exp_craftground
-conda install conda-forge::openjdk=21 conda-forge::cmake conda-forge::glew conda-forge::libpng conda-forge::libzlib
+conda install conda-forge::openjdk=21 conda-forge::cmake conda-forge::glew conda-forge::libpng conda-forge::libzlib conda-forge::libopengl conda-forge::libflite
 pip install craftground
-pip install wandb tensorboard moviepy stable-baselines3
+pip install wandb tensorboard moviepy
 pip install --upgrade git+https://github.com/DLR-RM/stable-baselines3.git # To ensure correct video rendering
 # Test SBX, install JAX and Jaxlib
 pip install jax jaxlib sbx
