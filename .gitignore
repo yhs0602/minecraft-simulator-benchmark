@@ -199,3 +199,4 @@ logs
 runs
 models
 ckpts/
+.DS_Store

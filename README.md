@@ -132,8 +132,12 @@ python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simu
 - image_width: 64x64, 114x64, 640x360
 - load: simulation, render, ppo, render_ppo, optimized_render, optimized_ppo, optimized_render_ppo
 
+## Experiment Results
+![64x64](images/64x64-4.png)
+![640x360](images/640x360-4.png)
 
-## Experiment Results (Frames Per Second, CUDA)
+
+## Experiment Results (Frames Per Second, CUDA, 9 seeds, top 4 average)
 Both used vglrun to run the experiments on headless server.
 
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
@@ -141,12 +145,12 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | ------------------------ | ----- | --------------- | -------------------- | ------- |
 | 64x64 Simul              | 57    | 192             | 145                  | 3.36x   |
 | 640x360 Simul            | 56    | 140             | 151                  | 2.7x    |
-| 64x64 Render             | 58.5  | 175             | 155                  | 2.99x   |
-| 640x360 Render           | 55    | 115             | 128                  | 2.33x   |
+| 64x64 Render             | 58.2  | 279.8           | 155                  | 4.80x   |
+| 640x360 Render           | 57.2  | 141.0           | 128                  | 2.47x   |
 | 64x64 PPO                | 45    | 103             | 87                   | 2.29x   |
 | 640x360 PPO              | 33    | 56.5            | 46                   | 1.71x   |
-| 64x64 PPO Render         | 44.5  | 102             | 76                   | 2.29x   |
-| 640x360 PPO Render       | 29.5  | 49              | 47                   | 1.66x   |
+| 64x64 PPO Render         | 46.5  | 134.5           | 76                   | 2.89x   |
+| 640x360 PPO Render       | 30.2  | 53.5            | 47                   | 1.77x   |
 | 64x64 Render Optim       | *58.5 | *175            | ?                    |         |
 | 640x360 Render Optim     | *55   | *115            | ?                    |         |
 | 64x64 PPO Optim          | *45   | *103            | ?                    |         |
@@ -156,7 +160,7 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 
 * Since the optimized version is not implemented on Malmö and CraftGround RAW mode, the results are the same as the non-optimized version.
 
-## Experiment Results (Frames Per Second, CUDA, SBX)
+## Experiment Results (Frames Per Second, CUDA, SBX, 9 seeds, top 4 average)
 | Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
 | ------------------------ | ----- | --------------- | -------------------- | ------- |
 | 64x64 PPO(CPU)           | 45.6  | 131.6           |                      | 2.89x   |
@@ -164,12 +168,12 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 640x360 PPO(CPU)         | 19    | 23              |                      | 1.21x   |
 | 640x360 PPO(CUDA)        | 34    | 53              |                      | 1.56x   |
 | 64x64 PPO Render(CPU)    | 45.3  | 94              |                      | 2.08x   |
-| 64x64 PPO Render(CUDA)   | 54.6  | 274             |                      | 5.02x   |
+| 64x64 PPO Render(CUDA)   | 54.5  | 264.8           |                      | 4.86x   |
 | 640x360 PPO Render(CPU)  | 18.5  | 23.5            |                      | 1.27x   |
-| 640x360 PPO Render(CUDA) | 34    | 47.5            |                      | 1.40x   |
+| 640x360 PPO Render(CUDA) | 34.8  | 53.2            |                      | 1.53x   |
 
 
-## Experiment Results (Frames Per Second, Apple M1 Pro)
+## Experiment Results (Frames Per Second, Apple M1 Pro, 2 seeds average)
 | Configuration      | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
 | ------------------ | ----- | --------------- | -------------------- | ------- |
 | 64x64 Simul        | -     | 138             | 133.5                |         |
@@ -181,7 +185,7 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 | 64x64 PPO Render   |       | 27.5            | 25                   |         |
 | 640x360 PPO Render |       | 13              | 13.5                 |         |
 
-## Experiment Results (Frames Per Second, Apple M1 Pro, SBX)
+## Experiment Results (Frames Per Second, Apple M1 Pro, SBX, 2 seeds average)
 | Configuration                 | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
 | ----------------------------- | ----- | --------------- | -------------------- | ------- |
 | 64x64 PPO(SBX, CPU)           |       | 133.5           | -                    |         |
