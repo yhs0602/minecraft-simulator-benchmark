@@ -29,12 +29,14 @@ def sbx_ppo_check(
     render: bool = False,
     use_optimized_sb3: bool = False,
     max_steps: int = MAX_STEPS,
+    use_shmem: bool = False,
 ):
     env = make_craftground_env(
         port=port,
         width=vision_width,
         height=vision_height,
         screen_encoding_mode=screen_encoding_mode,
+        use_shmem=use_shmem,
     )
     env = VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
     env = TreeWrapper(env)

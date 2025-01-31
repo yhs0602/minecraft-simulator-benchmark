@@ -41,12 +41,14 @@ def ppo_check(
     render: bool = False,
     use_optimized_sb3: bool = False,
     max_steps: int = MAX_STEPS,
+    use_shmem: bool = False,
 ):
     env = make_craftground_env(
         port=port,
         width=vision_width,
         height=vision_height,
         screen_encoding_mode=screen_encoding_mode,
+        use_shmem=use_shmem,
     )
     env = VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
     env = TreeWrapper(env)
@@ -107,12 +109,14 @@ def render_check(
     port: int,
     optimize: bool = False,
     max_steps: int = MAX_STEPS,
+    use_shmem: bool = False,
 ):
     env = make_craftground_env(
         port=port,
         width=vision_width,
         height=vision_height,
         screen_encoding_mode=screen_encoding_mode,
+        use_shmem=use_shmem,
     )
     env = VisionWrapper(env, x_dim=vision_width, y_dim=vision_height)
     if screen_encoding_mode == ScreenEncodingMode.ZEROCOPY and not optimize:
@@ -161,12 +165,14 @@ def simulation_check(
     vision_height: int,
     port: int,
     max_steps: int,
+    use_shmem: bool,
 ):
     env = make_craftground_env(
         port=port,
         width=vision_width,
         height=vision_height,
         screen_encoding_mode=screen_encoding_mode,
+        use_shmem=use_shmem,
     )
     obs, info = env.reset()  # info
     start_time = time.time_ns()
@@ -190,7 +196,9 @@ def simulation_check(
     env.terminate()
 
 
-def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
+def do_experiment(
+    mode, image_width, load, port, max_steps: int, device: str, use_shmem: bool
+):
     screen_encoding_mode = {
         "raw": ScreenEncodingMode.RAW,
         "zerocopy": ScreenEncodingMode.ZEROCOPY,
@@ -212,6 +220,8 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
         print("Running on macOS")
     else:
         group_name += f"craftground-{mode}--{vision_width}-{vision_height}-{load}"
+    if use_shmem:
+        group_name += "-shmem"
     print(f"Group name: {group_name}")
     run = wandb.init(
         # set the wandb project where this run will be logged
@@ -225,11 +235,22 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
 
     if load == "simulation":
         simulation_check(
-            screen_encoding_mode, vision_width, vision_height, port, max_steps
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            max_steps,
+            use_shmem,
         )
     elif load == "render":
         render_check(
-            run, screen_encoding_mode, vision_width, vision_height, port, max_steps
+            run,
+            screen_encoding_mode,
+            vision_width,
+            vision_height,
+            port,
+            max_steps,
+            use_shmem,
         )
     elif load == "ppo":
         ppo_check(
@@ -241,6 +262,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             render=False,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     elif load == "render_ppo":
         ppo_check(
@@ -252,6 +274,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             render=True,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     elif load == "optimized_render":
         render_check(
@@ -262,6 +285,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             port,
             optimize=True,
             max_steps=max_steps,
+            use_shmem=use_shmem,
         )
     elif load == "optimized_ppo":
         ppo_check(
@@ -274,6 +298,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             optimize=True,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     elif load == "optimized_render_ppo":
         ppo_check(
@@ -286,6 +311,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             use_optimized_sb3=True,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     elif load == "sbx-ppo":
         sbx_ppo_check(
@@ -298,6 +324,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             use_optimized_sb3=False,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     elif load == "render_sbx-ppo":
         sbx_ppo_check(
@@ -310,6 +337,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             use_optimized_sb3=False,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     elif load == "optimized_sbx-ppo":
         sbx_ppo_check(
@@ -322,6 +350,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             use_optimized_sb3=True,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     elif load == "optimized_render_sbx-ppo":
         sbx_ppo_check(
@@ -334,6 +363,7 @@ def do_experiment(mode, image_width, load, port, max_steps: int, device: str):
             use_optimized_sb3=True,
             max_steps=max_steps,
             device=device,
+            use_shmem=use_shmem,
         )
     else:
         raise ValueError(f"Unknown load configuration: {load}")
@@ -401,6 +431,12 @@ def main():
         help="Maximum number of steps to run the experiment.",
     )
 
+    parser.add_argument(
+        "--shmem",
+        action="store_true",
+        help="Use shared memory for the environment IPC.",
+    )
+
     args = parser.parse_args()
 
     # Display the selected configuration
@@ -410,9 +446,17 @@ def main():
     print(f"Mode: {args.mode}")
     print(f"Port: {args.port}")
     print(f"Max Steps: {args.max_steps}")
+    print(f"Device: {args.device}")
+    print(f"Shared Memory: {args.shmem}")
 
     do_experiment(
-        args.mode, args.image_width, args.load, args.port, args.max_steps, args.device
+        args.mode,
+        args.image_width,
+        args.load,
+        args.port,
+        args.max_steps,
+        args.device,
+        args.shmem,
     )
 
 
