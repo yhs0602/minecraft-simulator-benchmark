@@ -209,7 +209,9 @@ def do_experiment(
         "640x360": (640, 360),
     }[image_width]
 
-    group_name = "v2-"
+    group_name = (
+        "v3-"  # v3 is added to reduce the variance of craftground-sbx-render-ppo
+    )
     if device == "cpu":
         group_name += "cpu-"
         jax.config.update("jax_platform_name", "cpu")
