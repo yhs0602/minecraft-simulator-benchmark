@@ -156,5 +156,5 @@ def group_fps_topk(csv_file: str, k: int, use_middle: bool = True) -> dict:
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_file = os.path.join(current_dir, "data", "all.csv")
-    grouped_dict = group_fps_topk(csv_file, k=3)
+    grouped_dict = group_fps_topk(csv_file, k=4)
     print(grouped_dict)
