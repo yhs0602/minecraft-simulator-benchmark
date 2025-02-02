@@ -12,9 +12,9 @@ def make_craftground_env(
     width: int,
     height: int,
     screen_encoding_mode: ScreenEncodingMode,
-    verbose_python: bool = True,
-    verbose_gradle: bool = True,
-    verbose_jvm: bool = True,
+    verbose_python: bool = False,
+    verbose_gradle: bool = False,
+    verbose_jvm: bool = False,
     use_shmem: bool = False,
 ) -> gym.Env:
     return craftground.make(
