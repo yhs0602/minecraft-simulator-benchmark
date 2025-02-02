@@ -132,8 +132,8 @@ python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simu
 - load: simulation, render, ppo, render_ppo, optimized_render, optimized_ppo, optimized_render_ppo
 
 ## Experiment Results
-![64x64](images/64x64-4.png)
-![640x360](images/640x360-4.png)
+![64x64](images/64x64-middle9.png)
+![640x360](images/640x360-middle9.png)
 
 
 ## Experiment Results (Frames Per Second, CUDA, 9 seeds, top 4 average)

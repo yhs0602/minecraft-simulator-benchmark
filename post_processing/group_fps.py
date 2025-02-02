@@ -4,25 +4,50 @@ import pandas as pd
 import seaborn as sns
 
 
-def group_fps_top4(csv_file: str) -> dict:
-    topk = 1
+def select_middlek(df, k):
+    sorted_df = df.sort_values("time/fps", ascending=False)
+    mid_idx = len(sorted_df) // 2
+    half_k = k // 2
+    return sorted_df.iloc[
+        max(0, mid_idx - half_k) : min(len(sorted_df), mid_idx + half_k + k % 2)
+    ]
+
+
+def select_topk(df, k):
+    return df.nlargest(k, "time/fps")
+
+
+def group_fps_topk(csv_file: str, k: int, use_middle: bool = True) -> dict:
     df = pd.read_csv(csv_file)
 
     # Seperate 64x64 640x360
     df_64x64 = df[df["group"].str.contains("64-64")]
     df_640x360 = df[df["group"].str.contains("640-360")]
 
-    # Select top topk runs for each group
-    top_64x64 = (
-        df_64x64.groupby("group")
-        .apply(lambda x: x.nlargest(topk, "time/fps"))
-        .reset_index(drop=True)
-    )
-    top_640x360 = (
-        df_640x360.groupby("group")
-        .apply(lambda x: x.nlargest(topk, "time/fps"))
-        .reset_index(drop=True)
-    )
+    if use_middle:
+        # Select middle topk runs for each group
+        selected_64x64 = (
+            df_64x64.groupby("group")
+            .apply(lambda x: select_middlek(x, k))
+            .reset_index(drop=True)
+        )
+        selected_640x360 = (
+            df_640x360.groupby("group")
+            .apply(lambda x: select_middlek(x, k))
+            .reset_index(drop=True)
+        )
+    else:
+        # Select top topk runs for each group
+        selected_64x64 = (
+            df_64x64.groupby("group")
+            .apply(lambda x: x.nlargest(k, "time/fps"))
+            .reset_index(drop=True)
+        )
+        selected_640x360 = (
+            df_640x360.groupby("group")
+            .apply(lambda x: x.nlargest(k, "time/fps"))
+            .reset_index(drop=True)
+        )
 
     new_labels = {
         "v2-craftground-raw--64-64-render_sbx-ppo": "CraftGround SBX",
@@ -41,12 +66,13 @@ def group_fps_top4(csv_file: str) -> dict:
 
     # 64x64 Box Plot
     plt.figure(figsize=(12, 6))
-    sns.boxplot(data=top_64x64, x="group", y="time/fps", palette="Set3", width=0.5)
-    sns.swarmplot(data=top_64x64, x="group", y="time/fps", color=".25")
-    plt.title(f"Top {topk} Final FPS Comparison (64x64)", fontsize=16)
+    sns.boxplot(data=selected_64x64, x="group", y="time/fps", palette="Set3", width=0.5)
+    sns.swarmplot(data=selected_64x64, x="group", y="time/fps", color=".25")
+    title_text = "Middle" if use_middle else "Top"
+    plt.title(f"{title_text} {k} Final FPS Comparison (64x64)", fontsize=16)
     plt.xlabel("", fontsize=12)
     plt.ylabel("Final FPS", fontsize=12)
-    current_labels = top_64x64["group"].unique()  # Get current group names
+    current_labels = selected_64x64["group"].unique()  # Get current group names
     plt.xticks(
         ticks=range(len(current_labels)),  # Number of indices = number of groups
         labels=[
@@ -59,14 +85,15 @@ def group_fps_top4(csv_file: str) -> dict:
 
     y_min, y_max = plt.ylim()  # Get current y-axis range
     offset = (y_max - y_min) * 0.04
-    for i, group in enumerate(top_64x64["group"].unique()):
-        avg_fps = top_64x64[top_64x64["group"] == group]["time/fps"].mean()
-        top_fps = top_64x64[top_64x64["group"] == group]["time/fps"].max()
-        min_fps = top_64x64[top_64x64["group"] == group]["time/fps"].min()
+    for i, group in enumerate(selected_64x64["group"].unique()):
+        avg_fps = selected_64x64[selected_64x64["group"] == group]["time/fps"].mean()
+        top_fps = selected_64x64[selected_64x64["group"] == group]["time/fps"].max()
+        min_fps = selected_64x64[selected_64x64["group"] == group]["time/fps"].min()
+        std_fps = selected_64x64[selected_64x64["group"] == group]["time/fps"].std()
         plt.text(
             i,
             min_fps - offset,
-            f"{avg_fps:.1f}",
+            f"{avg_fps:.1f} ({std_fps:.1f})",
             ha="center",
             fontsize=10,
             color="blue",
@@ -75,17 +102,19 @@ def group_fps_top4(csv_file: str) -> dict:
 
     plt.tight_layout()
     plt.margins(y=0.1)
-    plt.savefig(f"64x64-{topk}.png")
+    plt.savefig(f"images/64x64-{title_text.lower()}{k}.png")
     plt.show()
 
     # 640x360 Box Plot
     plt.figure(figsize=(12, 6))
-    sns.boxplot(data=top_640x360, x="group", y="time/fps", palette="Set3", width=0.5)
-    sns.swarmplot(data=top_640x360, x="group", y="time/fps", color=".25")
-    plt.title(f"Top {topk} Final FPS Comparison (640x360)", fontsize=16)
+    sns.boxplot(
+        data=selected_640x360, x="group", y="time/fps", palette="Set3", width=0.5
+    )
+    sns.swarmplot(data=selected_640x360, x="group", y="time/fps", color=".25")
+    plt.title(f"{title_text} {k} Final FPS Comparison (640x360)", fontsize=16)
     plt.xlabel("", fontsize=12)
     plt.ylabel("Final FPS", fontsize=12)
-    current_labels = top_640x360["group"].unique()  # Get current group names
+    current_labels = selected_640x360["group"].unique()  # Get current group names
     plt.xticks(
         ticks=range(len(current_labels)),  # Number of indices = number of groups
         labels=[
@@ -98,14 +127,17 @@ def group_fps_top4(csv_file: str) -> dict:
 
     y_min, y_max = plt.ylim()  # Get current y-axis range
     offset = (y_max - y_min) * 0.04
-    for i, group in enumerate(top_640x360["group"].unique()):
-        avg_fps = top_640x360[top_640x360["group"] == group]["time/fps"].mean()
-        top_fps = top_640x360[top_640x360["group"] == group]["time/fps"].max()
-        min_fps = top_640x360[top_640x360["group"] == group]["time/fps"].min()
+    for i, group in enumerate(selected_640x360["group"].unique()):
+        avg_fps = selected_640x360[selected_640x360["group"] == group][
+            "time/fps"
+        ].mean()
+        top_fps = selected_640x360[selected_640x360["group"] == group]["time/fps"].max()
+        min_fps = selected_640x360[selected_640x360["group"] == group]["time/fps"].min()
+        std_fps = selected_640x360[selected_640x360["group"] == group]["time/fps"].std()
         plt.text(
             i,
             min_fps - offset,
-            f"{avg_fps:.1f}",
+            f"{avg_fps:.1f} ({std_fps:.1f})",
             ha="center",
             fontsize=10,
             color="blue",
@@ -113,16 +145,16 @@ def group_fps_top4(csv_file: str) -> dict:
         )
     plt.tight_layout()
     plt.margins(y=0.1)
-    plt.savefig(f"640x360-{topk}.png")
+    plt.savefig(f"images/640x360-{title_text.lower()}{k}.png")
     plt.show()
 
     # Return grouped dictionary
-    grouped_dict = {"64x64_topk": top_64x64, "640x360_topk": top_640x360}
+    grouped_dict = {"64x64_topk": selected_64x64, "640x360_topk": selected_640x360}
     return grouped_dict
 
 
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_file = os.path.join(current_dir, "data", "all.csv")
-    grouped_dict = group_fps_top4(csv_file)
+    grouped_dict = group_fps_topk(csv_file, k=3)
     print(grouped_dict)
