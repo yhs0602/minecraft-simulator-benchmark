@@ -27,14 +27,59 @@ def remove_outliers_iqr(df, column="time/fps"):
     return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
 
 
+desired_order = [
+    "CraftGround",
+    "CraftGround SB3",
+    "CraftGround SBX",
+    "Malmo",
+    "Malmo SB3",
+    "Malmo SBX",
+]
+
+
 def group_fps_topk(
     csv_file: str, k: int, use_middle: bool = True, remove_iql: bool = True
 ) -> dict:
     df = pd.read_csv(csv_file)
 
-    # Seperate 64x64 640x360
-    df_64x64 = df[df["group"].str.contains("64-64")]
-    df_640x360 = df[df["group"].str.contains("640-360")]
+    desired_order = [
+        "CraftGround",
+        "CraftGround SB3",
+        "CraftGround SBX",
+        "Malmo",
+        "Malmo SB3",
+        "Malmo SBX",
+    ]
+
+    new_labels = {
+        "v3-craftground-raw--64-64-render_sbx-ppo": "CraftGround SBX",
+        "v2-craftground-raw--64-64-render_ppo": "CraftGround SB3",
+        "v2-craftground-raw--64-64-render": "CraftGround",
+        "v2-minerl100--64-64-render_sbx-ppo": "Malmo SBX",
+        "v2-minerl100--64-64-render_ppo": "Malmo SB3",
+        "v2-minerl100--64-64-render": "Malmo",
+        "v2-craftground-raw--640-360-render_sbx-ppo": "CraftGround SBX",
+        "v2-craftground-raw--640-360-render_ppo": "CraftGround SB3",
+        "v2-craftground-raw--640-360-render": "CraftGround",
+        "v2-minerl100--640-360-render_sbx-ppo": "Malmo SBX",
+        "v2-minerl100--640-360-render_ppo": "Malmo SB3",
+        "v2-minerl100--640-360-render": "Malmo",
+    }
+
+    df_64x64 = df[df["group"].str.contains("64-64")].copy()
+    df_640x360 = df[df["group"].str.contains("640-360")].copy()
+
+    df_64x64["group"] = df_64x64["group"].map(new_labels)
+    df_64x64 = df_64x64.sort_values(
+        by="group",
+        key=lambda x: x.map({v: i for i, v in enumerate(desired_order)}),
+    )
+
+    df_640x360["group"] = df_640x360["group"].map(new_labels)
+    df_640x360 = df_640x360.sort_values(
+        by="group",
+        key=lambda x: x.map({v: i for i, v in enumerate(desired_order)}),
+    )
 
     if remove_iql:
         df_64x64 = df_64x64.groupby("group", group_keys=False).apply(
@@ -69,25 +114,21 @@ def group_fps_topk(
             .reset_index(drop=True)
         )
 
-    new_labels = {
-        "v2-craftground-raw--64-64-render_sbx-ppo": "CraftGround SBX",
-        "v2-craftground-raw--64-64-render_ppo": "CraftGround SB3",
-        "v2-craftground-raw--64-64-render": "CraftGround",
-        "v2-minerl100--64-64-render_sbx-ppo": "Malmo SBX",
-        "v2-minerl100--64-64-render_ppo": "Malmo SB3",
-        "v2-minerl100--64-64-render": "Malmo",
-        "v2-craftground-raw--640-360-render_sbx-ppo": "CraftGround SBX",
-        "v2-craftground-raw--640-360-render_ppo": "CraftGround SB3",
-        "v2-craftground-raw--640-360-render": "CraftGround",
-        "v2-minerl100--640-360-render_sbx-ppo": "Malmo SBX",
-        "v2-minerl100--640-360-render_ppo": "Malmo SB3",
-        "v2-minerl100--640-360-render": "Malmo",
-    }
-
     # 64x64 Box Plot
     plt.figure(figsize=(12, 6))
-    sns.boxplot(data=selected_64x64, x="group", y="time/fps", palette="Set3", width=0.5)
-    sns.swarmplot(data=selected_64x64, x="group", y="time/fps", color=".25")
+    sns.boxplot(
+        data=selected_64x64,
+        x="group",
+        y="time/fps",
+        palette="Set3",
+        width=0.5,
+    )
+    sns.swarmplot(
+        data=selected_64x64,
+        x="group",
+        y="time/fps",
+        color=".25",
+    )
     title_text = "Middle" if use_middle else "Top"
     plt.title(f"{title_text} {k} Final FPS Comparison (64x64)", fontsize=16)
     plt.xlabel("", fontsize=12)
@@ -128,9 +169,18 @@ def group_fps_topk(
     # 640x360 Box Plot
     plt.figure(figsize=(12, 6))
     sns.boxplot(
-        data=selected_640x360, x="group", y="time/fps", palette="Set3", width=0.5
+        data=selected_640x360,
+        x="group",
+        y="time/fps",
+        palette="Set3",
+        width=0.5,
     )
-    sns.swarmplot(data=selected_640x360, x="group", y="time/fps", color=".25")
+    sns.swarmplot(
+        data=selected_640x360,
+        x="group",
+        y="time/fps",
+        color=".25",
+    )
     plt.title(f"{title_text} {k} Final FPS Comparison (640x360)", fontsize=16)
     plt.xlabel("", fontsize=12)
     plt.ylabel("Final FPS", fontsize=12)
@@ -176,5 +226,5 @@ def group_fps_topk(
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_file = os.path.join(current_dir, "data", "all.csv")
-    grouped_dict = group_fps_topk(csv_file, k=5)
+    grouped_dict = group_fps_topk(csv_file, k=9)
     print(grouped_dict)

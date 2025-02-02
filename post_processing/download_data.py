@@ -58,7 +58,7 @@ def predicate(run: Run):
         "v2-minerl100--640-360-render_sbx-ppo",
         "v2-craftground-raw--64-64-render",
         "v2-craftground-raw--64-64-render_ppo",
-        "v2-craftground-raw--64-64-render_sbx-ppo",
+        "v3-craftground-raw--64-64-render_sbx-ppo",
         "v2-craftground-raw--640-360-render",
         "v2-craftground-raw--640-360-render_ppo",
         "v2-craftground-raw--640-360-render_sbx-ppo",
