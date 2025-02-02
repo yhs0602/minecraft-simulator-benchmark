@@ -136,7 +136,22 @@ python experiments/craftground_exp.py --mode raw --image_width 64x64 --load simu
 ![640x360](images/640x360-middle9.png)
 
 
-## Experiment Results (Frames Per Second, CUDA, 9 seeds, top 4 average)
+## Experiment Results (Frames Per Second, CUDA, 9 seeds)
+Both used vglrun to run the experiments on headless server.
+
+For PPO, used stable-baselines3 (SB3) and stable-baselines-jax (SBX). To mitigate the influence of extreme values, we applied outlier removal using the Interquartile Range (IQR) method. Data points below Q1 - 1.5 × IQR or above Q3 + 1.5 × IQR were excluded.
+
+| Configuration           | Malmö      | CraftGround RAW | Speedup |
+| ----------------------- | ---------- | --------------- | ------- |
+| 64x64 Render            | 57.7 (0.7) | 160.7 (17.8)    | 2.79x   |
+| 64x64 PPO Render(SB3)   | 44.7 (2.2) | 115.2 (23.7)    | 2.58x   |
+| 64x64 PPO Render(SBX)   | 54.0 (0.0) | 125.0 (12.5)    | 2.31x   |
+| 640x360 Render          | 55.9 (1.6) | 110.0 (8.8)     | 1.97x   |
+| 640x360 PPO Render(SB3) | 30.0 (0.0) | 52.1 (2.3)      | 1.74x   |
+| 640x360 PPO Render(SBX) | 33.8 (1.3) | 49.7 (4.1)      | 1.47x   |
+
+
+## Experiment Results (Frames Per Second, CUDA, 2 - 9 seeds, not strict setting)
 Both used vglrun to run the experiments on headless server.
 
 For PPO, used stable-baselines3. For optimized version which uses tensor directly, we are planning to implement it in the future.
@@ -159,7 +174,7 @@ For PPO, used stable-baselines3. For optimized version which uses tensor directl
 
 * Since the optimized version is not implemented on Malmö and CraftGround RAW mode, the results are the same as the non-optimized version.
 
-## Experiment Results (Frames Per Second, CUDA, SBX, 9 seeds, top 4 average)
+## Experiment Results (Frames Per Second, CUDA, SBX, 2-9 seeds)
 | Configuration            | Malmö | CraftGround RAW | CraftGround ZeroCopy | Speedup |
 | ------------------------ | ----- | --------------- | -------------------- | ------- |
 | 64x64 PPO(CPU)           | 45.6  | 131.6           |                      | 2.89x   |
