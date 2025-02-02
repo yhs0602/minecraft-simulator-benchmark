@@ -17,12 +17,32 @@ def select_topk(df, k):
     return df.nlargest(k, "time/fps")
 
 
-def group_fps_topk(csv_file: str, k: int, use_middle: bool = True) -> dict:
+def remove_outliers_iqr(df, column="time/fps"):
+    """Remove outliers using IQR method"""
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+
+
+def group_fps_topk(
+    csv_file: str, k: int, use_middle: bool = True, remove_iql: bool = True
+) -> dict:
     df = pd.read_csv(csv_file)
 
     # Seperate 64x64 640x360
     df_64x64 = df[df["group"].str.contains("64-64")]
     df_640x360 = df[df["group"].str.contains("640-360")]
+
+    if remove_iql:
+        df_64x64 = df_64x64.groupby("group", group_keys=False).apply(
+            remove_outliers_iqr
+        )
+        df_640x360 = df_640x360.groupby("group", group_keys=False).apply(
+            remove_outliers_iqr
+        )
 
     if use_middle:
         # Select middle topk runs for each group
@@ -156,5 +176,5 @@ def group_fps_topk(csv_file: str, k: int, use_middle: bool = True) -> dict:
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_file = os.path.join(current_dir, "data", "all.csv")
-    grouped_dict = group_fps_topk(csv_file, k=4)
+    grouped_dict = group_fps_topk(csv_file, k=9)
     print(grouped_dict)
