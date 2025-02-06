@@ -32,4 +32,5 @@ def make_craftground_env(
         verbose_gradle=verbose_gradle,
         verbose_jvm=verbose_jvm,
         # use_shared_memory=use_shmem,
+        profile_jni=True,
     )
