@@ -78,20 +78,33 @@ def draw_stats(all_depths, conversion: bool):
 
 def depth_to_grayscale(depth):
     # depth = depth / np.max(depth)
-    return (depth * 255).astype(np.uint8)
+    return cv2.cvtColor((depth * 255).astype(np.uint8))
+
+
+def depth_to_colormap(depth):
+    """
+    Convert depth values to a visually distinguishable colormap.
+    """
+    # Normalize depth to range 0-255
+    depth_normalized = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX)
+    depth_normalized = depth_normalized.astype(np.uint8)
+
+    # Apply a colormap (e.g., JET, VIRIDIS, or INFERNO)
+    depth_colormap = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_JET)
+
+    return depth_colormap
 
 
 def combine_depth_rgb(depth_frame, rgb_frame):
     """
     64x64 Grayscale Depth Frame 64x64 RGB Frame concat
     """
-    depth_bgr = cv2.cvtColor(depth_frame, cv2.COLOR_GRAY2BGR)
     # flip upside down depth frame
-    depth_bgr = cv2.flip(depth_bgr, 0)
+    depth_frame = cv2.flip(depth_frame, 0)
 
     # Concatenate Depth and RGB (64x64 → 64x128)
     # print(depth_bgr.shape, rgb_frame.shape)
-    combined = np.hstack((depth_bgr, rgb_frame))
+    combined = np.hstack((depth_frame, rgb_frame))
     return combined
 
 
@@ -116,6 +129,13 @@ def save_depth_video(depth_frames, rgb_frames, filename="depth_video.mp4", fps=3
 
 
 if __name__ == "__main__":
+    colorize_depth = True
+
+    if colorize_depth:
+        converter = depth_to_colormap
+    else:
+        converter = depth_to_grayscale
+
     env = make_craftground_env(
         port=8000,
         width=64,
@@ -159,9 +179,9 @@ if __name__ == "__main__":
 
     # save depth video
     save_depth_video(
-        [depth_to_grayscale(depth) for depth in all_depths],
+        [converter(depth) for depth in all_depths],
         rgb_frames,
-        filename="depth_video_raw.mp4",
+        filename="depth_video_raw_colored.mp4",
     )
 
     all_depths = []
@@ -202,7 +222,7 @@ if __name__ == "__main__":
     draw_stats(all_depths, conversion=True)
     # save depth video
     save_depth_video(
-        [depth_to_grayscale(depth) for depth in all_depths],
+        [converter(depth) for depth in all_depths],
         rgb_frames,
-        filename="depth_video_converted.mp4",
+        filename="depth_video_converted_colored.mp4",
     )
