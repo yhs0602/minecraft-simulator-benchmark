@@ -31,7 +31,7 @@ def create_nbt() -> str:
     return out_path
 
 
-def create_environment(nbt_path: str):
+def create_environment(nbt_path: str, convert_depth: bool = True):
     print(f"{nbt_path=}{(type(nbt_path))}")
     env = craftground.make(
         port=8000,
@@ -43,7 +43,7 @@ def create_environment(nbt_path: str):
             screen_encoding_mode=ScreenEncodingMode.RAW,
             requires_depth=True,
             world_type=WorldType.SUPERFLAT,
-            requires_depth_conversion=True,
+            requires_depth_conversion=convert_depth,
             structure_paths=[str(nbt_path)],
             initial_extra_commands=[
                 "time set noon",
@@ -117,7 +117,7 @@ def overlay_depth_values(image, depth, sample_points):
                 text,
                 (x + 5, y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.3,
+                0.2,
                 (0, 0, 0),
                 1,
                 cv2.LINE_AA,
@@ -128,7 +128,8 @@ def overlay_depth_values(image, depth, sample_points):
 
 def main():
     nbt_path = create_nbt()
-    env = create_environment(nbt_path=nbt_path)
+    convert_depth = True  # True is recommended in real use.
+    env = create_environment(nbt_path=nbt_path, convert_depth=convert_depth)
     obs, info = env.reset()
 
     for i in range(20):
@@ -153,6 +154,10 @@ def main():
         # flip upside down depth
         depth = cv2.flip(depth, 0)
 
+        if not convert_depth:
+            # spread the depth and normalize to 0 - 1
+            depth = depth / (np.max(depth) - np.min(depth) + EPSILON)
+
         # Save Depth as Numpy Array
         np.save(f"{out_dir}/depth_{i}.npy", depth)
         # Save depth as csv
@@ -165,7 +170,7 @@ def main():
         cv2.imwrite(f"{out_dir}/depth_gray_{i}.png", overlayed_gray_depth)
         cv2.imwrite(f"{out_dir}/depth_color_{i}.png", overlayed_rgb_depth)
         # Save RGB as PNG
-        rgb_img = obs["pov"]
+        rgb_img = cv2.cvtColor(obs["pov"], cv2.COLOR_BGR2RGB)
         overlayed_rgb_img = overlay_depth_values(rgb_img, depth, sample_points)
         cv2.imwrite(f"{out_dir}/rgb_{i}.png", overlayed_rgb_img)
         # Save Combined as PNG
