@@ -3,6 +3,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+plt.rcParams["font.family"] = "Times New Roman"
+
 
 def select_middlek(df, k):
     sorted_df = df.sort_values("time/fps", ascending=False)
@@ -130,9 +132,11 @@ def group_fps_topk(
         color=".25",
     )
     title_text = "Middle" if use_middle else "Top"
-    plt.title(f"{title_text} {k} Final FPS Comparison (64x64)", fontsize=16)
-    plt.xlabel("", fontsize=12)
-    plt.ylabel("Final FPS", fontsize=12)
+    plt.title(f"{title_text} {k} Final FPS Comparison (64x64)", fontsize=24)
+    plt.xlabel("", fontsize=16)
+    plt.ylabel("Final FPS", fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     current_labels = selected_64x64["group"].unique()  # Get current group names
     plt.xticks(
         ticks=range(len(current_labels)),  # Number of indices = number of groups
@@ -156,7 +160,7 @@ def group_fps_topk(
             min_fps - offset,
             f"{avg_fps:.1f} ({std_fps:.1f})",
             ha="center",
-            fontsize=10,
+            fontsize=16,
             color="blue",
             bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
@@ -181,9 +185,11 @@ def group_fps_topk(
         y="time/fps",
         color=".25",
     )
-    plt.title(f"{title_text} {k} Final FPS Comparison (640x360)", fontsize=16)
-    plt.xlabel("", fontsize=12)
-    plt.ylabel("Final FPS", fontsize=12)
+    plt.title(f"{title_text} {k} Final FPS Comparison (640x360)", fontsize=24)
+    plt.xlabel("", fontsize=16)
+    plt.ylabel("Final FPS", fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     current_labels = selected_640x360["group"].unique()  # Get current group names
     plt.xticks(
         ticks=range(len(current_labels)),  # Number of indices = number of groups
@@ -209,7 +215,7 @@ def group_fps_topk(
             min_fps - offset,
             f"{avg_fps:.1f} ({std_fps:.1f})",
             ha="center",
-            fontsize=10,
+            fontsize=16,
             color="blue",
             bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
